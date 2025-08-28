@@ -1,0 +1,23 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --animate-slide: slideout 0.5s ease-in-out;
+
+  @keyframes slideout {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(100px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+}
+:root {
+  --p-primary-color: #ff6600; /* สีหลัก */
+  --p-primary-text-color: #ffffff;
+  --p-primary-hover-color: #ff8533;
+}
