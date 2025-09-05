@@ -10,11 +10,11 @@ const isSidebarOpen = ref(true);
 <template>
   <div class="bg-base-200">
     <Topbar @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
-    <div class="pt-22 h-full">
+    <div class="pt-22 h-full pb-6">
       <Sidebar :is-sidebar-open="isSidebarOpen" />
       <div
         :class="{ 'ml-[18rem]': isSidebarOpen, 'ml-0': isSidebarOpen }"
-        class="mx-6 mb-6 rounded-xl h-full bg-white shadow-md transition-all duration-300"
+        class="mx-6 rounded-xl h-full bg-white shadow-md transition-all duration-300"
       >
         <div class="p-5">
           <router-view />

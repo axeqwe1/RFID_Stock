@@ -1,8 +1,22 @@
 <template>
   <div class="card">
-    <DataTable :value="products" tableStyle="min-width: 50rem">
+    <DataTable
+      :value="products"
+      size="small"
+      paginator
+      stripedRows
+      scrollable
+      scrollHeight="500px"
+      :rows="5"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
+      tableStyle="min-width: 50rem"
+      paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+    >
       <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-2">
+        <div
+          class="flex flex-wrap items-center justify-between gap-2 sticky top-0"
+        >
           <span class="text-xl font-bold">Products</span>
           <Button
             :label="isScan ? 'STOP SCAN' : 'START SCAN'"
@@ -54,6 +68,149 @@ onMounted(() => {
       style: "P2SACW10",
       color: "54 ORANGE/BLUE , BLUE",
       size: "XS",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "S",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "M",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
+      image:
+        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+
+      quantity: 1,
+      targetQuantity: 50,
+    },
+    {
+      id: "14800348086636",
+      name: "HOME - PLAYER",
+      style: "P2SACW10",
+      color: "54 ORANGE/BLUE , BLUE",
+      size: "L",
       image:
         "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
 
