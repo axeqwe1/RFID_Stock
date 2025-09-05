@@ -21,8 +21,12 @@
             <ul class="flex flex-col gap-1">
               <li class="" v-for="subitem in item.items">
                 <button
-                  @click="subitem.active = !subitem.active"
-                  class="rounded-lg p-2 bg-gray-300 hover:bg-gray-400 w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-100 ease-in"
+                  @click="
+                    subitem.items
+                      ? (subitem.active = !subitem.active)
+                      : router.push(subitem.route)
+                  "
+                  class="rounded-lg p-2 bg-transparent hover:bg-gray-200 w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-100 ease-in"
                 >
                   <span
                     >{{ subitem.label }} <span :class="subitem.icon"></span
@@ -58,6 +62,7 @@
                 >
                   <button
                     v-for="child in subitem.items"
+                    @click="router.push(child.route)"
                     class="p-2 ml-4 border-l-1 border-l-gray-300 w-full text-left hover:border-l-black cursor-pointer transition-all duration-200 ease-in-out"
                   >
                     {{ child.label }}
@@ -99,46 +104,44 @@ const isOpen = ref<boolean>(props.isSidebarOpen);
 
 const items = ref<MenuItem>([
   {
-    label: "Documents",
+    label: "RFID Menu",
     items: [
       {
-        label: "New",
+        label: "RFID Management",
         icon: "pi pi-plus",
         items: [
           {
-            label: "Project",
+            label: "Register",
             icon: "pi pi-fw pi-folder",
-          },
-          {
-            label: "Other",
-            icon: "pi pi-fw pi-file",
+            route: "/rfidregister",
           },
         ],
       },
       {
-        label: "Search",
+        label: "SCAN Stock",
         icon: "pi pi-search",
+        route: "/scan",
       },
     ],
   },
-  {
-    label: "Profile",
-    items: [
-      {
-        label: "Settings",
-        icon: "pi pi-cog",
-      },
-      {
-        label: "Messages",
-        icon: "pi pi-inbox",
-        badge: 2,
-      },
-      {
-        label: "Logout",
-        icon: "pi pi-sign-out",
-      },
-    ],
-  },
+  // {
+  //   label: "Profile",
+  //   items: [
+  //     {
+  //       label: "Settings",
+  //       icon: "pi pi-cog",
+  //     },
+  //     {
+  //       label: "Messages",
+  //       icon: "pi pi-inbox",
+  //       badge: 2,
+  //     },
+  //     {
+  //       label: "Logout",
+  //       icon: "pi pi-sign-out",
+  //     },
+  //   ],
+  // },
 ]);
 </script>
 

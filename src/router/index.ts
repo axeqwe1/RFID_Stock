@@ -8,6 +8,16 @@ const router = createRouter({
       name: "home",
       component: () => import("../view/DashboardView.vue"),
     },
+    {
+      path: "/scan",
+      name: "scan",
+      component: () => import("../view/DashboardView.vue"),
+    },
+    {
+      path: "/rfidregister",
+      name: "rfidregister",
+      component: () => import("../view/RFIDRegister.vue"),
+    },
   ],
 });
 

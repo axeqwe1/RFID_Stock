@@ -5,8 +5,11 @@ import App from "./App.vue";
 import router from "./router";
 import Aura from "@primeuix/themes/aura";
 import Button from "primevue/button";
+import Toast from "primevue/toast";
+import ToastService from "primevue/toastservice";
 import "./Global.css";
 import "primeicons/primeicons.css";
+import { Form } from "@primevue/forms";
 const app = createApp(App);
 
 app.use(createPinia());
@@ -15,7 +18,9 @@ app.use(PrimeVue, {
     preset: Aura,
   },
 });
-app.component("Button", Button);
+app.use(ToastService);
+app.component("Toast", Toast);
+app.component("Form", Form);
 app.use(router);
 
 app.mount("#app");
