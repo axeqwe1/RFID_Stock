@@ -26,7 +26,18 @@
                       ? (subitem.active = !subitem.active)
                       : router.push(subitem.route)
                   "
-                  class="rounded-lg p-2 bg-transparent hover:bg-gray-200 w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-100 ease-in"
+                  :class="[
+                    {
+                      'bg-green-400 hover:bg-green-300':
+                        route.path == subitem.route && !subitem.active,
+                    },
+                    { 'bg-base-200 hover:bg-base-300': subitem.active },
+                    {
+                      'bg-transparent hover:bg-gray-200':
+                        route.path != subitem.route && !subitem.active,
+                    },
+                  ]"
+                  class="rounded-lg p-2 w-full flex flex-row justify-between items-center cursor-pointer transition-all duration-100 ease-in"
                 >
                   <span
                     >{{ subitem.label }} <span :class="subitem.icon"></span
@@ -63,7 +74,12 @@
                   <button
                     v-for="child in subitem.items"
                     @click="router.push(child.route)"
-                    class="p-2 ml-4 border-l-1 border-l-gray-300 w-full text-left hover:border-l-black cursor-pointer transition-all duration-200 ease-in-out"
+                    :class="
+                      route.path == child.route
+                        ? 'border-l-black bg-base-200'
+                        : 'border-l-gray-300'
+                    "
+                    class="p-2 ml-4 border-l-1 w-full text-left hover:border-l-black cursor-pointer transition-all duration-200 ease-in-out"
                   >
                     {{ child.label }}
                   </button>
@@ -87,8 +103,9 @@
 import type { MenuItem } from "primevue/menuitem";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 const router = useRouter();
-
+const route = useRoute();
 const props = defineProps<{
   isSidebarOpen: boolean;
 }>();
@@ -124,6 +141,9 @@ const items = ref<MenuItem>([
       },
     ],
   },
+  watch(route, () => {
+    console.log(route.path);
+  }),
   // {
   //   label: "Profile",
   //   items: [
