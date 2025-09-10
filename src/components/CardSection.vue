@@ -1,17 +1,22 @@
 <template>
   <div class="bg-surface-50 dark:bg-surface-950 py-8">
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
       <div class="bg-white dark:bg-surface-900 shadow-sm p-5 rounded-2xl">
         <div class="flex justify-between gap-4">
           <div class="flex flex-col gap-2">
             <span
               class="text-surface-700 dark:text-surface-300 font-normal leading-tight"
-              >Messages</span
+              >TOTAL Quantity</span
             >
             <div
               class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!"
             >
-              152
+              {{
+                new Intl.NumberFormat("th-TH", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                }).format(T_QTY ? T_QTY : 0)
+              }}
             </div>
           </div>
           <div
@@ -22,7 +27,7 @@
             />
           </div>
         </div>
-        <div class="mt-4">
+        <!-- <div class="mt-4">
           <span
             class="text-surface-600 dark:text-surface-300 font-medium leading-tight"
             >24 new</span
@@ -30,7 +35,7 @@
           <span class="text-surface-500 dark:text-surface-300 leading-tight">
             since last visit</span
           >
-        </div>
+        </div> -->
       </div>
 
       <div class="bg-white dark:bg-surface-900 shadow-sm p-5 rounded-2xl">
@@ -38,12 +43,17 @@
           <div class="flex flex-col gap-2">
             <span
               class="text-surface-700 dark:text-surface-300 font-normal leading-tight"
-              >Check-ins</span
+              >TOTAL Price</span
             >
             <div
               class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!"
             >
-              532
+              {{
+                new Intl.NumberFormat("th-TH", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                }).format(T_PRICE ? T_PRICE : 0)
+              }}
             </div>
           </div>
           <div
@@ -54,7 +64,7 @@
             />
           </div>
         </div>
-        <div class="mt-4">
+        <!-- <div class="mt-4">
           <span
             class="text-surface-600 dark:text-surface-300 font-medium leading-tight"
             >48 new</span
@@ -62,7 +72,7 @@
           <span class="text-surface-500 dark:text-surface-300 leading-tight">
             since last visit</span
           >
-        </div>
+        </div> -->
       </div>
 
       <div class="bg-white dark:bg-surface-900 shadow-sm p-5 rounded-2xl">
@@ -70,12 +80,17 @@
           <div class="flex flex-col gap-2">
             <span
               class="text-surface-700 dark:text-surface-300 font-normal leading-tight"
-              >Files Synced</span
+              >Total Product</span
             >
             <div
               class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!"
             >
-              28.441
+              {{
+                new Intl.NumberFormat("th-TH", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                }).format(T_PRODUCT ? T_PRODUCT : 0)
+              }}
             </div>
           </div>
           <div
@@ -86,13 +101,13 @@
             />
           </div>
         </div>
-        <div class="mt-4">
+        <!-- <div class="mt-4">
           <span class="text-surface-500 dark:text-surface-300 leading-tight"
             >32,56 / 250 GB</span
           >
-        </div>
+        </div> -->
       </div>
-
+      <!-- 
       <div class="bg-white dark:bg-surface-900 shadow-sm p-5 rounded-2xl">
         <div class="flex justify-between gap-4">
           <div class="flex flex-col gap-2">
@@ -123,9 +138,33 @@
             user this week</span
           >
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, ref, watch } from "vue";
+
+const props = defineProps<{
+  TOTAL_QTY: number;
+  TOTAL_PRICE: number;
+  TOTAL_PRODUCT: number;
+}>();
+
+const T_QTY = ref<number>();
+const T_PRICE = ref<number>();
+const T_PRODUCT = ref<number>();
+
+onMounted(() => {
+  T_QTY.value = props.TOTAL_QTY;
+  T_PRICE.value = props.TOTAL_PRICE;
+  T_PRODUCT.value = props.TOTAL_PRODUCT;
+});
+
+watch(props, () => {
+  T_QTY.value = props.TOTAL_QTY;
+  T_PRICE.value = props.TOTAL_PRICE;
+  T_PRODUCT.value = props.TOTAL_PRODUCT;
+});
+</script>
 <style scoped></style>

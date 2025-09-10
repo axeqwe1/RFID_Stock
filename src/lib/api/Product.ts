@@ -24,6 +24,24 @@ export const GetProductData = async () => {
   }
 };
 
+export const GetProductRFID = async (sku: string) => {
+  try {
+    const res = await apiService.get(API_PATH + "GetProductRFID?EPC=" + sku);
+    return res;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const GetAllProductRFID = async () => {
+  try {
+    const res = await apiService.get(API_PATH + "GetAllProductRFID");
+    return res;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
 export const AddRfidToProduct = async (request: AddRfidRequest[]) => {
   try {
     console.log(request);

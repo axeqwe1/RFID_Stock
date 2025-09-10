@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <DataTable
-      :value="products"
+      :value="productsDetail"
       size="small"
       paginator
       stripedRows
@@ -18,16 +18,51 @@
           class="flex flex-wrap items-center justify-between gap-2 sticky top-0"
         >
           <span class="text-xl font-bold">Products</span>
-          <Button
-            :label="isScan ? 'STOP SCAN' : 'START SCAN'"
-            :icon="isScan ? 'pi pi-stop-circle' : 'pi pi-play-circle'"
-            @click="isScan = !isScan"
-            :class="isScan ? 'p-button-danger' : 'p-button-secondary'"
-          />
+          <span>
+            TOTAL :
+            {{
+              productsDetail
+                ? productsDetail.reduce((ac, cur) => ac + cur.qty, 0)
+                : 0
+            }}
+            || TOTAL PRICE:
+            {{
+              productsDetail
+                ? new Intl.NumberFormat("th-TH", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  }).format(
+                    productsDetail
+                      ? productsDetail.reduce(
+                          (ac, cur) => ac + cur.price * cur.qty,
+                          0
+                        )
+                      : 0
+                  )
+                : 0
+            }}
+            BATH
+          </span>
+          <div class="flex flex-row gap-3">
+            <Button
+              class="w-40"
+              :label="'Clear'"
+              :icon="'pi pi-refresh'"
+              @click="handleClear"
+              :class="'p-button-info'"
+            />
+            <Button
+              class="w-40"
+              :label="isScan ? 'STOP SCAN' : 'START SCAN'"
+              :icon="isScan ? 'pi pi-stop-circle' : 'pi pi-play-circle'"
+              @click="handleScan"
+              :class="isScan ? 'p-button-danger' : 'p-button-secondary'"
+            />
+          </div>
         </div>
       </template>
 
-      <Column header="Image">
+      <!-- <Column header="Image">
         <template #body="slotProps">
           <img
             :src="slotProps.data.image"
@@ -35,192 +70,56 @@
             class="w-24 rounded"
           />
         </template>
-      </Column>
-      <Column field="id" header="ID" />
+      </Column> -->
+      <Column field="sku" header="SKU" />
 
-      <Column field="name" header="Name" />
+      <Column field="customerStyle" header="CustomerStyle" />
 
       <Column field="style" header="Style" />
 
       <Column field="color" header="Color" />
 
       <Column field="size" header="Size" />
-
-      <Column field="quantity" header="Quantity" />
-      <Column field="targetQuantity" header="TargetQuantity" />
+      <Column field="price" header="Price/Qty" />
+      <Column field="qty" header="ScanFound" />
+      <Column field="shopify_InventoryQty" header="ShopifyInventoryQty" />
       <template #footer>
-        In total there are {{ products ? products.length : 0 }} products.
+        In total there are
+        {{
+          productsDetail
+            ? productsDetail.reduce((ac, cur) => ac + cur.qty, 0)
+            : 0
+        }}
+        products.
       </template>
     </DataTable>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import type { ProductDetail } from "@/types/type";
+import { ref, onMounted, watch } from "vue";
 // import { ProductService } from "@/service/ProductService";
 
+const emits = defineEmits<{
+  (e: "scan", value: boolean): void;
+  (e: "clear", value: boolean): void;
+}>();
+const props = defineProps<{
+  productDetails: ProductDetail[];
+  NotConnectCount?: number;
+}>();
 const isScan = ref<boolean>(false);
-onMounted(() => {
-  products.value = [
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "XS",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "S",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
 
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "M",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
+const productsDetail = ref<ProductDetail[]>();
 
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-    {
-      id: "14800348086636",
-      name: "HOME - PLAYER",
-      style: "P2SACW10",
-      color: "54 ORANGE/BLUE , BLUE",
-      size: "L",
-      image:
-        "https://cdn.shopify.com/s/files/1/0928/5635/3132/files/Mizuno-PortJuly25-3.jpg?v=1756890603",
-
-      quantity: 1,
-      targetQuantity: 50,
-    },
-  ];
-});
-
-const products = ref();
+function handleScan() {
+  isScan.value = !isScan.value;
+  emits("scan", isScan.value);
+}
+function handleClear() {
+  emits("clear", true);
+}
 const formatCurrency = (value: any) => {
   return value.toLocaleString("en-US", { style: "currency", currency: "USD" });
 };
@@ -239,4 +138,21 @@ const getSeverity = (product: any) => {
       return undefined;
   }
 };
+
+onMounted(() => {
+  productsDetail.value = props.productDetails;
+});
+
+watch(
+  () => props.productDetails,
+  (newVal) => {
+    productsDetail.value = newVal;
+  }
+);
+watch(
+  () => props.NotConnectCount,
+  () => {
+    isScan.value = false;
+  }
+);
 </script>

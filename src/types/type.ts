@@ -30,9 +30,22 @@ export interface Product {
   shopify_InventoryQty: number;
 }
 
+export interface ProductDetail {
+  sku: string;
+  style: string;
+  color: string;
+  size: string;
+  customerStyle: string;
+  price: number;
+  barcode: string;
+  shopify_InventoryQty: number;
+  rfid: string;
+  qty: number;
+}
+
 export interface ProductRFID {
-  sKU: string;
-  rFID: string;
+  sku: string;
+  rfid: string;
   createDate: Date;
 }
 // export interface ProductRFID {

@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import DataTableComponent from "@/components/DataTableRegister.vue";
 import Dialog from "primevue/dialog";
@@ -180,6 +180,7 @@ const NotConnectCount = ref<number>(0);
 const isScan = ref<boolean>(true);
 const Productdata = ref<Product[]>([]);
 const styleList = ref<{ style: string }[]>([]);
+const isConnected = ref<boolean>(false);
 // ใช้ any กับข้อมูลฟอร์ม เพราะ PrimeVue ต้องการ Record<string, any>
 const initialValues = reactive({
   barcode: "",
@@ -319,16 +320,28 @@ const onFormSubmit = async (event: any) => {
 const submitForm = () => {
   formRef.value.submit(); // เรียก submit ผ่าน ref
 };
-const onScan = (isScaned: boolean) => {
+const onScan = async (isScaned: boolean) => {
   console.log(isScaned);
-  isScaned ? startRfid() : stopRfid();
+
   if (isScaned && !validateField()) {
-    stopRfid();
+    await stopRfid();
     invalidCount.value++;
   } else {
-    if (requestData.value.length < 1) {
+    if (requestData.value.length < 1 && isConnected.value) {
       isScan.value = !isScaned;
     }
+    isScaned ? await startRfid() : await stopRfid();
+  }
+  if (!isConnected.value) {
+    await stopRfid();
+    toast.add({
+      severity: "error",
+      summary: "Please connect the RFID device.",
+      detail: `Please connect the RFID device!`,
+      life: 3000,
+    });
+    isScan.value = true;
+    NotConnectCount.value++;
   }
 };
 const onClear = (clear: boolean) => {
@@ -345,19 +358,32 @@ const onClear = (clear: boolean) => {
   }
 };
 onMounted(async () => {
+  if (connection.value?.state === "Connected") {
+    return;
+  }
   createSignalRConnection(import.meta.env.VITE_HUB_URL);
   connection.value = getSignalRConnection();
+
   if (connection.value) {
     connection.value.on("ReceiveRFIDUpdate", (message) => {
       console.log(message);
       if (message == "NotConnect") {
+        isConnected.value = false;
         stopRfid();
-        // NotConnectCount.value++;
+        NotConnectCount.value++;
+      } else {
+        toast.add({
+          severity: "success",
+          summary: "Connect RFID Scanner.",
+          detail: `Connect RFID Scanner Success!`,
+          life: 3000,
+        });
+        isConnected.value = true;
       }
     });
     connection.value.on("ReceiveRFIDData", (message) => {
       // console.log(message);
-
+      isConnected.value = true;
       listData.value.push(message);
       listData.value = [...new Set(listData.value)];
       const newEPC: AddRfidRequest = {
@@ -426,6 +452,15 @@ onMounted(async () => {
   await fetchData();
 
   console.log(Productdata.value);
+});
+onUnmounted(() => {
+  // หยุด connection เมื่อ component ถูก unmount
+  if (connection.value) {
+    connection.value.off("ReceiveRFIDUpdate");
+    connection.value.off("ReceiveRFIDData");
+    connection.value.stop();
+    stopRfid();
+  }
 });
 </script>
 <!-- 
