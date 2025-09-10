@@ -100,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+import { label } from "@primeuix/themes/aura/metergroup";
 import type { MenuItem } from "primevue/menuitem";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -138,6 +139,11 @@ const items = ref<MenuItem>([
         label: "SCAN Stock",
         icon: "pi pi-search",
         route: "/scan",
+      },
+      {
+        label: "SignalR Test",
+        icon: "pi pi-search",
+        route: "/test",
       },
     ],
   },

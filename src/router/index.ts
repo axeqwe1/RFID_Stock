@@ -18,6 +18,11 @@ const router = createRouter({
       name: "rfidregister",
       component: () => import("../view/RFIDRegister.vue"),
     },
+    {
+      path: "/test",
+      name: "test",
+      component: () => import("../components/SignalR.vue"),
+    },
   ],
 });
 

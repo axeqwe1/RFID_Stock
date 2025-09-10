@@ -6,15 +6,38 @@ export interface MenuItem {
   active?: boolean;
 }
 
+// export interface Product {
+//   id: number;
+//   code: string;
+//   name: string;
+//   description: string;
+//   image: string;
+//   price: number;
+//   category: string;
+//   quantity: number;
+//   inventoryStatus: "INSTOCK" | "LOWSTOCK" | "OUTOFSTOCK";
+//   rating: number;
+// }
+
 export interface Product {
-  id: number;
-  code: string;
-  name: string;
-  description: string;
-  image: string;
+  sku: string;
+  style: string;
+  color: string;
+  size: string;
+  customerStyle: string;
   price: number;
-  category: string;
-  quantity: number;
-  inventoryStatus: "INSTOCK" | "LOWSTOCK" | "OUTOFSTOCK";
-  rating: number;
+  barcode: string;
+  shopify_InventoryQty: number;
 }
+
+export interface ProductRFID {
+  sKU: string;
+  rFID: string;
+  createDate: Date;
+}
+// export interface ProductRFID {
+//   style: string;
+//   styleCustomer: string;
+//   color: string;
+//   size: string;
+// }
