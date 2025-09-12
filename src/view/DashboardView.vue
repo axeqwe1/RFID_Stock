@@ -67,7 +67,7 @@ async function onScan(isScan: boolean) {
       detail: `Please connect the RFID device!`,
       life: 3000,
     });
-    await stopRfid();
+
     NotConnectCount.value++;
   }
 }

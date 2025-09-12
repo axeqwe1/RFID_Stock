@@ -333,7 +333,7 @@ const onScan = async (isScaned: boolean) => {
     isScaned ? await startRfid() : await stopRfid();
   }
   if (!isConnected.value) {
-    await stopRfid();
+    // await stopRfid();
     toast.add({
       severity: "error",
       summary: "Please connect the RFID device.",

@@ -23,6 +23,11 @@ const router = createRouter({
       name: "test",
       component: () => import("../components/SignalR.vue"),
     },
+    {
+      path: "/checkstock",
+      name: "checkstock",
+      component: () => import("../view/CheckStockView.vue"),
+    },
   ],
 });
 

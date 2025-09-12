@@ -28,6 +28,7 @@ export interface Product {
   price: number;
   barcode: string;
   shopify_InventoryQty: number;
+  rfidScan: number;
 }
 
 export interface ProductDetail {

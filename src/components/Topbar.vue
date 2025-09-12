@@ -13,7 +13,7 @@
         </Button>
         <h1 class="text-xl font-bold">RFID Stock</h1>
       </div>
-      <div>
+      <!-- <div>
         <ul class="flex flex-row items-center ml-10 space-x-6">
           <li>
             <div class="relative">
@@ -60,13 +60,110 @@
             </div>
           </li>
         </ul>
-      </div>
+      </div> -->
+      <Button label="Settings" @click="visible = true" />
+
+      <Dialog
+        v-model:visible="visible"
+        modal
+        header="Settings"
+        :style="{ width: '90vw', height: '90vh' }"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+      >
+        <div class="w-full h-full flex flex-col">
+          <Tabs value="0">
+            <TabList>
+              <Tab value="0">Set PowerANT</Tab>
+              <Tab value="1">Config Network</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel value="0">
+                <div
+                  class="w-full h-full flex flex-col gap-6 justify-center items-center"
+                >
+                  <div class="flex flex-row gap-6 justify-center items-center">
+                    <label>ANT1</label>
+                    <InputText type="text" :value="modelANT.ant1.toString()" />
+                  </div>
+                  <div class="flex flex-row gap-6 justify-center items-center">
+                    <label>ANT2</label>
+                    <InputText type="text" :value="modelANT.ant1.toString()" />
+                  </div>
+                  <div class="flex flex-row gap-6 justify-center items-center">
+                    <label>ANT3</label>
+                    <InputText type="text" :value="modelANT.ant1.toString()" />
+                  </div>
+                  <div class="flex flex-row gap-6 justify-center items-center">
+                    <label>ANT4</label>
+                    <InputText type="text" :value="modelANT.ant1.toString()" />
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel value="1">
+                <div
+                  class="w-full h-full flex flex-col gap-6 justify-center items-center"
+                >
+                  <div class="flex flex-col justify-start items-start gap-3">
+                    <div
+                      class="flex flex-row gap-6 justify-center items-center"
+                    >
+                      <label class="w-15">IP</label>
+                      <InputText type="text" :value="modelNetConfig.IP" />
+                      <span class="font-bold text-2xl">:</span>
+                      <label class="">PORT</label>
+                      <InputText
+                        class="max-w-[70px]"
+                        type="text"
+                        :value="modelNetConfig.IP"
+                      />
+                    </div>
+                    <div
+                      class="flex flex-row gap-6 justify-center items-center"
+                    ></div>
+                    <div
+                      class="flex flex-row gap-6 justify-center items-center"
+                    >
+                      <label class="w-15">Gateway</label>
+                      <InputText type="text" :value="modelNetConfig.Gateway" />
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </div>
+      </Dialog>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import Button from "primevue/button";
+import Dialog from "primevue/dialog";
+import Tabs from "primevue/tabs";
+import TabList from "primevue/tablist";
+import Tab from "primevue/tab";
+import TabPanels from "primevue/tabpanels";
+import TabPanel from "primevue/tabpanel";
+import InputText from "primevue/inputtext";
+import { reactive, ref } from "vue";
+const visible = ref(false);
+const modelANT = reactive({
+  ant1: 0,
+  ant2: 0,
+  ant3: 0,
+  ant4: 0,
+} as {
+  ant1: number;
+  ant2: number;
+  ant3: number;
+  ant4: number;
+});
+const modelNetConfig = reactive({
+  IP: "",
+  PORT: "",
+  Gateway: "",
+});
 defineEmits(["toggleSidebar"]);
 </script>
 
