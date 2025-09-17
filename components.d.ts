@@ -12,7 +12,6 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     CardSection: typeof import('./src/components/CardSection.vue')['default']
     Column: typeof import('primevue/column')['default']
-    copy: typeof import('./src/components/DataTableScanStock copy.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     DataTableCheckStock: typeof import('./src/components/DataTableCheckStock.vue')['default']
     DataTableRegister: typeof import('./src/components/DataTableRegister.vue')['default']

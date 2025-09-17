@@ -73,33 +73,10 @@
         <div class="w-full h-full flex flex-col">
           <Tabs value="0">
             <TabList>
-              <Tab value="0">Set PowerANT</Tab>
-              <Tab value="1">Config Network</Tab>
+              <Tab value="0">Config Network</Tab>
             </TabList>
             <TabPanels>
               <TabPanel value="0">
-                <div
-                  class="w-full h-full flex flex-col gap-6 justify-center items-center"
-                >
-                  <div class="flex flex-row gap-6 justify-center items-center">
-                    <label>ANT1</label>
-                    <InputText type="text" :value="modelANT.ant1.toString()" />
-                  </div>
-                  <div class="flex flex-row gap-6 justify-center items-center">
-                    <label>ANT2</label>
-                    <InputText type="text" :value="modelANT.ant1.toString()" />
-                  </div>
-                  <div class="flex flex-row gap-6 justify-center items-center">
-                    <label>ANT3</label>
-                    <InputText type="text" :value="modelANT.ant1.toString()" />
-                  </div>
-                  <div class="flex flex-row gap-6 justify-center items-center">
-                    <label>ANT4</label>
-                    <InputText type="text" :value="modelANT.ant1.toString()" />
-                  </div>
-                </div>
-              </TabPanel>
-              <TabPanel value="1">
                 <div
                   class="w-full h-full flex flex-col gap-6 justify-center items-center"
                 >
@@ -108,24 +85,18 @@
                       class="flex flex-row gap-6 justify-center items-center"
                     >
                       <label class="w-15">IP</label>
-                      <InputText type="text" :value="modelNetConfig.IP" />
+                      <InputText type="text" v-model="modelNetConfig.IP" />
                       <span class="font-bold text-2xl">:</span>
                       <label class="">PORT</label>
                       <InputText
                         class="max-w-[70px]"
                         type="text"
-                        :value="modelNetConfig.IP"
+                        v-model="modelNetConfig.PORT"
                       />
                     </div>
                     <div
                       class="flex flex-row gap-6 justify-center items-center"
                     ></div>
-                    <div
-                      class="flex flex-row gap-6 justify-center items-center"
-                    >
-                      <label class="w-15">Gateway</label>
-                      <InputText type="text" :value="modelNetConfig.Gateway" />
-                    </div>
                   </div>
                 </div>
               </TabPanel>
@@ -146,25 +117,42 @@ import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
 import TabPanel from "primevue/tabpanel";
 import InputText from "primevue/inputtext";
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
+import { useMaster } from "@/stores/MasterStore";
 const visible = ref(false);
-const modelANT = reactive({
-  ant1: 0,
-  ant2: 0,
-  ant3: 0,
-  ant4: 0,
-} as {
-  ant1: number;
-  ant2: number;
-  ant3: number;
-  ant4: number;
-});
+// const modelANT = reactive({
+//   ant1: 0,
+//   ant2: 0,
+//   ant3: 0,
+//   ant4: 0,
+// } as {
+//   ant1: number;
+//   ant2: number;
+//   ant3: number;
+//   ant4: number;
+// });
 const modelNetConfig = reactive({
   IP: "",
   PORT: "",
   Gateway: "",
 });
+const store = useMaster();
 defineEmits(["toggleSidebar"]);
+onMounted(() => {
+  modelNetConfig.IP = store.IP;
+  modelNetConfig.PORT = store.PORT;
+});
+watch(
+  () => [store.IP, store.PORT],
+  () => {
+    modelNetConfig.IP = store.IP;
+    modelNetConfig.PORT = store.PORT;
+  }
+);
+watch(modelNetConfig, () => {
+  store.SETNETWORK(modelNetConfig.IP, modelNetConfig.PORT);
+  console.log(store.IP, ":", store.PORT);
+});
 </script>
 
 <style scoped></style>

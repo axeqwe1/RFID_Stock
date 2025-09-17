@@ -44,6 +44,7 @@ import {
   type ProductDetail,
   type ProductRFID,
 } from "@/types/type";
+import { useMaster } from "@/stores/MasterStore";
 const connection = ref<HubConnection | null>(null);
 const isConnected = ref<boolean>(false);
 const NotConnectCount = ref<number>(0);
@@ -58,6 +59,8 @@ const toast = useToast();
 let Products: Product[] = [];
 const isLoading = ref<boolean>(false);
 let tempDetail: ProductDetail[] = [];
+const store = useMaster();
+const IPConf = `${store.IP}:${store.PORT}`;
 async function onScan(isScan: boolean) {
   isScan ? await startRfid() : await stopRfid();
   if (!isConnected.value) {
@@ -74,6 +77,8 @@ async function onScan(isScan: boolean) {
 function onClear(clear: boolean) {
   ProductDetailList.value = [];
   tempDetail = [];
+  stopRfid();
+  console.log("clear");
 }
 
 onMounted(async () => {

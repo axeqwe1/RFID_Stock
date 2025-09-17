@@ -1,5 +1,6 @@
 import axios from "axios";
 import { apiService } from "../axios";
+import { useMaster } from "@/stores/MasterStore";
 // import type { LoginRequest } from "@/data/dto/request/auth";
 
 // export const login = async (data: LoginRequest) => {
@@ -11,10 +12,12 @@ import { apiService } from "../axios";
 //     throw err;
 //   }
 // };
-
+const store = useMaster();
+const IPConf = `${store.IP}:${store.PORT}`;
 export const startRfid = async () => {
   try {
-    const res = await apiService.post("/rfidApi/RFID/StartReading", {});
+    console.log(IPConf);
+    const res = await apiService.post("/rfidApi/RFID/StartReading", IPConf);
     return res;
   } catch (err) {
     console.error(err);
@@ -24,7 +27,8 @@ export const startRfid = async () => {
 
 export const stopRfid = async () => {
   try {
-    const res = await apiService.post("/rfidApi/RFID/StopReading", {});
+    console.log(IPConf);
+    const res = await apiService.post("/rfidApi/RFID/StopReading", IPConf);
     return res;
   } catch (err) {
     console.error(err);

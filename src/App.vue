@@ -3,7 +3,9 @@ import { Button, PanelMenu } from "primevue";
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import Sidebar from "@/components/Sidebar.vue";
 import Topbar from "@/components/Topbar.vue";
+import { useMaster } from "./stores/MasterStore";
 
+const store = useMaster();
 // Reactive state
 const isSidebarOpen = ref(false); // Start closed on mobile by default
 const windowWidth = ref(0);
@@ -49,6 +51,18 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", updateWindowWidth);
   window.removeEventListener("resize", manageSidebarState);
+});
+
+onMounted(() => {
+  const IP = localStorage.getItem("IP");
+  const PORT = localStorage.getItem("PORT");
+
+  if (!IP || !PORT) {
+    store.SETNETWORK("192.168.1.116", "9090");
+  } else {
+    store.IP = IP;
+    store.PORT = PORT;
+  }
 });
 </script>
 
