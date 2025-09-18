@@ -1,179 +1,70 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
-import { refresh } from "./api/auth";
+import axios, { type AxiosInstance } from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+function createAxiosInstance(baseURL: string): AxiosInstance {
+  const instance = axios.create({
+    baseURL,
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  });
 
-if (!API_BASE_URL) {
-  throw new Error("Environment is not defined in .env");
-}
+  // Request Interceptor
+  instance.interceptors.request.use(
+    (config) => {
+      if (config.data instanceof FormData) {
+        config.headers["Content-Type"] = "multipart/form-data";
+      } else {
+        config.headers["Content-Type"] = "application/json";
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
 
-const Axios = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-});
+  // Response Interceptor
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-Axios.interceptors.request.use(
-  (config) => {
-    // กรณีอัปโหลดไฟล์: เปลี่ยน Content-Type เป็น multipart/form-data
-    if (config.data instanceof FormData) {
-      config.headers["Content-Type"] = "multipart/form-data";
-    } else {
-      config.headers["Content-Type"] = "application/json";
-    }
+      const isUnauthorized = error.response?.status === 401;
+      const url = new URL(originalRequest.url, baseURL).pathname;
+      const isRefreshCall = url === "/api/Auth/refresh";
+      const isLoginCall = url === "/api/Auth/login";
+      const hasAuthenCookie = document.cookie.includes("auth_status");
 
-    // // เพิ่ม Token จาก localStorage (ถ้ามี)
-    // const token = localStorage.getItem("token");
-    // if (token) {
-    //   config.headers["Authorization"] = `Bearer ${token}`;
-    // }
+      if (isUnauthorized && isLoginCall) {
+        return Promise.reject(error);
+      }
 
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+      if (
+        isUnauthorized &&
+        !originalRequest._retry &&
+        !isRefreshCall &&
+        !isLoginCall &&
+        hasAuthenCookie
+      ) {
+        originalRequest._retry = true;
+        try {
+          // call refresh (ใช้ instance เดิม)
+          await instance.post("/api/Auth/refresh");
+          return instance(originalRequest);
+        } catch (refreshError) {
+          console.error("Refresh token failed:", refreshError);
+          if (window.location.pathname !== "/login") {
+            window.location.href = `${import.meta.env.BASE_URL.replace(
+              /\/$/,
+              ""
+            )}/login`;
+          }
+          return Promise.reject(refreshError);
+        }
+      }
 
-// Response Interceptor
-Axios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    const isUnauthorized = error.response?.status === 401;
-    const url = new URL(originalRequest.url, API_BASE_URL).pathname;
-    const isRefreshCall = url === "/api/Auth/refresh";
-    const isLoginCall = url === "/api/Auth/login";
-    const isLogoutCall = url === "/api/Auth/logout";
-    const hasAuthenCookie = document.cookie.includes("auth_status");
-    // const isCheckAuthen = url === "/api/Auth/me";
-
-    // ถ้าเป็น login call ที่ fail ให้ส่ง error กลับไปตรงๆ
-    if (isUnauthorized && isLoginCall) {
       return Promise.reject(error);
     }
+  );
 
-    if (
-      isUnauthorized &&
-      !originalRequest._retry &&
-      !isRefreshCall &&
-      !isLoginCall &&
-      hasAuthenCookie
-    ) {
-      originalRequest._retry = true;
+  return instance;
+}
 
-      try {
-        // ส่ง request โดยไม่ต้องใส่ body เพราะ backend อ่านจาก cookie
-        const res = await refresh();
-        console.log(res);
-        // ไม่ต้องเก็บ token ใน localStorage เพราะใช้ cookie
-        // แค่ retry original request
-        return Axios(originalRequest);
-      } catch (refreshError) {
-        console.error("Refresh token failed:", refreshError);
-        // redirect ไป login page
-        if (window.location.pathname !== "/login") {
-          `${import.meta.env.BASE_URL.replace(/\/$/, "")}/login`;
-        }
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
-
-const get = (
-  url: string,
-  params: any = {},
-  config: AxiosRequestConfig = {}
-): Promise<AxiosResponse> => {
-  return Axios({
-    method: "get",
-    url,
-    params,
-    ...config,
-  });
-};
-
-const post = (
-  url: string,
-  data = {},
-  config: AxiosRequestConfig = {}
-): Promise<AxiosResponse> => {
-  return Axios({
-    method: "post",
-    url,
-    data,
-    ...config,
-  });
-};
-
-const put = (
-  url: string,
-  data = {},
-  config: AxiosRequestConfig = {}
-): Promise<AxiosResponse> => {
-  return Axios({
-    method: "put",
-    url,
-    data,
-    ...config,
-  });
-};
-
-const patch = (
-  url: string,
-  data = {},
-  config: AxiosRequestConfig = {}
-): Promise<AxiosResponse> => {
-  return Axios({
-    method: "patch",
-    url,
-    data,
-    ...config,
-  });
-};
-
-const _delete = (
-  url: string,
-  data = {},
-  config: AxiosRequestConfig = {}
-): Promise<AxiosResponse> => {
-  return Axios({
-    method: "delete",
-    url,
-    data,
-    ...config,
-  });
-};
-
-const mediaUpload = (
-  url: string,
-  data = {},
-  config: AxiosRequestConfig = {}
-): Promise<AxiosResponse> => {
-  return Axios({
-    method: "post",
-    url,
-    data,
-    ...config,
-  });
-};
-
-const request = (config: AxiosRequestConfig = {}): Promise<AxiosResponse> => {
-  return Axios(config);
-};
-
-export const apiService = {
-  get,
-  post,
-  put,
-  patch,
-  _delete,
-  mediaUpload,
-  request,
-};
+export default createAxiosInstance;

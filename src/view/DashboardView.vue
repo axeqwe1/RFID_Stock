@@ -77,7 +77,7 @@ async function onScan(isScan: boolean) {
 function onClear(clear: boolean) {
   ProductDetailList.value = [];
   tempDetail = [];
-  stopRfid();
+  // stopRfid();
   console.log("clear");
 }
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiService } from "../axios";
+import { apiService, rfidService } from "../service";
 import type { AddRfidRequest } from "@/data/requestDTO/AddRFIDRequest";
 // import type { LoginRequest } from "@/data/dto/request/auth";
 
