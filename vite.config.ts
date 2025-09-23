@@ -28,8 +28,8 @@ import { PrimeVueResolver } from "unplugin-vue-components/resolvers";
 
 export default defineConfig(({ mode }) => {
   return {
-    // base: mode === "production" ? "/RFIDStock/" : "/", // ✅,
-    base: "/",
+    base: mode === "production" ? "/RFIDStock/" : "/", // ✅,
+    // base: "/",
     // base: "/PMD/",
     plugins: [
       vue(),

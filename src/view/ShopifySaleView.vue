@@ -1,7 +1,91 @@
 <template>
   <div class="card flex justify-center">
     <Toast />
-    <DataTableShopifySale :product-details="productList" />
+
+    <div class="bg-surface-50 dark:bg-surface-950 px-3 mb-6">
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+        <div class="bg-surface-0 dark:bg-surface-900 shadow-sm p-5 rounded-2xl">
+          <div class="flex justify-between gap-4">
+            <div class="flex flex-col gap-2">
+              <span
+                class="text-surface-700 dark:text-surface-300 font-normal leading-tight"
+                >Total Quantity</span
+              >
+              <div
+                class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!"
+              >
+                {{
+                  new Intl.NumberFormat("th-TH", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  }).format(totalqty ? totalqty : 0)
+                }}
+                PC.
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-center bg-linear-to-b from-cyan-400 dark:from-cyan-300 to-cyan-600 dark:to-cyan-500 rounded-lg w-10 h-10"
+            >
+              <i
+                class="pi pi-verified text-surface-0 dark:text-surface-900 text-xl! leading-none!"
+              />
+            </div>
+          </div>
+          <div class="mt-4">
+            <!-- <span
+              class="text-surface-600 dark:text-surface-300 font-medium leading-tight"
+              >24 new</span
+            > -->
+            <span class="text-surface-500 dark:text-surface-300 leading-tight">
+              from filter data</span
+            >
+          </div>
+        </div>
+
+        <div class="bg-surface-0 dark:bg-surface-900 shadow-sm p-5 rounded-2xl">
+          <div class="flex justify-between gap-4">
+            <div class="flex flex-col gap-2">
+              <span
+                class="text-surface-700 dark:text-surface-300 font-normal leading-tight"
+                >Total Net Sales</span
+              >
+              <div
+                class="text-surface-900 dark:text-surface-0 font-semibold text-2xl! leading-tight!"
+              >
+                {{
+                  new Intl.NumberFormat("th-TH", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(netsales ? netsales : 0)
+                }}
+                THB
+              </div>
+            </div>
+            <div
+              class="flex items-center justify-center bg-linear-to-b from-orange-400 dark:from-orange-300 to-orange-600 dark:to-orange-500 rounded-lg w-10 h-10"
+            >
+              <i
+                class="pi pi-money-bill text-surface-0 dark:text-surface-900 text-xl! leading-none!"
+              />
+            </div>
+          </div>
+          <div class="mt-4">
+            <!-- <span
+              class="text-surface-600 dark:text-surface-300 font-medium leading-tight"
+              >48 new</span
+            > -->
+            <span class="text-surface-500 dark:text-surface-300 leading-tight">
+              from filter data</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <DataTableShopifySale
+      @on-filter="onFilter"
+      :product-details="productList"
+    />
   </div>
 </template>
 
@@ -27,6 +111,14 @@ import { GetSalesDaily } from "@/lib/api/Sales";
 // 🎯 วิธีที่ 1: ใช้ type ที่ PrimeVue คาดหวัง (ง่ายที่สุด)
 const toast = useToast() as any;
 const productList = ref<SalesDaily[]>([]);
+
+const netsales = ref<number>(0);
+const totalqty = ref<number>(0);
+function onFilter(totalQty: number, totalNetSale: number) {
+  netsales.value = totalNetSale;
+  totalqty.value = totalQty;
+  console.log("parent", netsales.value, netsales.value);
+}
 
 onMounted(async () => {
   const fetchData = async () => {
