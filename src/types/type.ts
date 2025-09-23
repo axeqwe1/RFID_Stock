@@ -49,6 +49,21 @@ export interface ProductRFID {
   rfid: string;
   createDate: Date;
 }
+
+export interface SalesDaily {
+  order_date?: string; // ใช้ string แทน DateTime (ISO string เช่น "2025-09-23T00:00:00Z")
+  source_name?: string;
+  currency?: string; // C# char แปลงมาเป็น string ความยาว 1
+  sku?: string;
+  title?: string;
+  size?: string;
+  total_qty?: number;
+  gross_sales?: number;
+  total_discount?: number;
+  net_sales?: number;
+  total_taxes?: number;
+  distinct_orders?: number;
+}
 // export interface ProductRFID {
 //   style: string;
 //   styleCustomer: string;

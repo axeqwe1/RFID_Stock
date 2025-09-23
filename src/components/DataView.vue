@@ -98,7 +98,7 @@ import type { SelectButtonChangeEvent } from "primevue";
 import DataView from "primevue/dataview";
 import type { Product } from "@/types/type";
 import { onMounted, ref } from "vue";
-import { productData } from "@/data/productData";
+
 import Select from "primevue/select";
 const products = ref<Product[]>([]);
 const sortKey = ref();
@@ -109,9 +109,7 @@ const sortOptions = ref([
   { label: "Price Low to High", value: "price" },
 ]);
 const isScan = ref<boolean>();
-onMounted(() => {
-  products.value = productData;
-});
+
 const onSortChange = (event: SelectButtonChangeEvent) => {
   const value = event.value.value;
   const sortValue = event.value;
@@ -124,21 +122,6 @@ const onSortChange = (event: SelectButtonChangeEvent) => {
     sortOrder.value = 1;
     sortField.value = value;
     sortKey.value = sortValue;
-  }
-};
-const getSeverity = (product: Product) => {
-  switch (product.inventoryStatus) {
-    case "INSTOCK":
-      return "success";
-
-    case "LOWSTOCK":
-      return "warn";
-
-    case "OUTOFSTOCK":
-      return "danger";
-
-    default:
-      return null;
   }
 };
 </script>

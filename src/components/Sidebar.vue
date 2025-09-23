@@ -271,6 +271,16 @@ const items = ref([
       },
     ],
   },
+  {
+    label: "Sale",
+    items: [
+      {
+        label: "Shopify Sale Daily",
+        icon: "pi pi-shopping-bag",
+        route: "/shopifysale",
+      },
+    ],
+  },
 ]);
 </script>
 

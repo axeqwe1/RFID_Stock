@@ -28,6 +28,11 @@ const router = createRouter({
       name: "checkstock",
       component: () => import("../view/CheckStockView.vue"),
     },
+    {
+      path: "/shopifysale",
+      name: "shopifysale",
+      component: () => import("../view/ShopifySaleView.vue"),
+    },
   ],
 });
 

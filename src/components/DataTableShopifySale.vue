@@ -50,6 +50,87 @@
       </template>
 
       <Column
+        field="order_date"
+        filterField="order_date"
+        :showFilterMenu="false"
+        header="Order Date"
+      >
+        <template #body="{ data }">
+          <div class="flex items-center gap-2">
+            <span>{{ data.order_date.split("T")[0] }}</span>
+          </div>
+        </template>
+
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect
+            size="small"
+            filter
+            v-model="filterModel.value"
+            @change="filterCallback()"
+            :options="[
+              ...new Set(
+                productsDetail.map(
+                  (item) => item.order_date?.toString().split('T')[0]
+                )
+              ),
+            ]"
+            placeholder="Filter Order "
+            style="min-width: 1rem"
+            :maxSelectedLabels="1"
+          >
+            <template #option="slotProps">
+              <div class="flex items-center gap-2">
+                <span>{{ slotProps.option.split("T")[0] }}</span>
+              </div>
+            </template>
+          </MultiSelect>
+        </template>
+      </Column>
+
+      <Column field="title" header="Title" />
+
+      <Column
+        field="source_name"
+        filterField="source_name"
+        :showFilterMenu="false"
+        header="Source"
+      >
+        <template #body="{ data }">
+          <div class="flex items-center justify-center gap-2">
+            <span class="text-center">{{ data.source_name }}</span>
+          </div>
+        </template>
+
+        <template #filter="{ filterModel, filterCallback }">
+          <MultiSelect
+            size="small"
+            filter
+            v-model="filterModel.value"
+            @change="filterCallback()"
+            :options="[
+              ...new Set(productsDetail.map((item) => item.source_name)),
+            ]"
+            placeholder="Source"
+            style="min-width: 1rem"
+            :maxSelectedLabels="1"
+          >
+            <template #option="slotProps">
+              <div class="flex items-center gap-2">
+                <span>{{ slotProps.option }}</span>
+              </div>
+            </template>
+          </MultiSelect>
+        </template>
+      </Column>
+
+      <Column field="currency" header="Currency">
+        <template #body="{ data }">
+          <div class="flex items-center justify-center gap-2">
+            <span class="text-center">{{ data.currency }}</span>
+          </div>
+        </template>
+      </Column>
+      <Column
         field="sku"
         filterField="sku"
         :showFilterMenu="false"
@@ -67,73 +148,8 @@
             filter
             v-model="filterModel.value"
             @change="filterCallback()"
-            :options="productsDetail.map((item) => item.sku)"
-            placeholder="Filter SKU "
-            style="min-width: 1rem"
-            :maxSelectedLabels="1"
-          >
-            <template #option="slotProps">
-              <div class="flex items-center gap-2">
-                <span>{{ slotProps.option }}</span>
-              </div>
-            </template>
-          </MultiSelect>
-        </template>
-      </Column>
-
-      <Column field="customerStyle" header="CustomerStyle" />
-
-      <Column
-        field="style"
-        filterField="style"
-        :showFilterMenu="false"
-        header="Style"
-      >
-        <template #body="{ data }">
-          <div class="flex items-center gap-2">
-            <span>{{ data.style }}</span>
-          </div>
-        </template>
-
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect
-            size="small"
-            filter
-            v-model="filterModel.value"
-            @change="filterCallback()"
-            :options="[...new Set(productsDetail.map((item) => item.style))]"
-            placeholder="Filter Style"
-            style="min-width: 1rem"
-            :maxSelectedLabels="1"
-          >
-            <template #option="slotProps">
-              <div class="flex items-center gap-2">
-                <span>{{ slotProps.option }}</span>
-              </div>
-            </template>
-          </MultiSelect>
-        </template>
-      </Column>
-      <Column
-        field="color"
-        filterField="color"
-        :showFilterMenu="false"
-        header="Color"
-      >
-        <template #body="{ data }">
-          <div class="flex items-center gap-2">
-            <span>{{ data.color }}</span>
-          </div>
-        </template>
-
-        <template #filter="{ filterModel, filterCallback }">
-          <MultiSelect
-            size="small"
-            filter
-            v-model="filterModel.value"
-            @change="filterCallback()"
-            :options="[...new Set(productsDetail.map((item) => item.color))]"
-            placeholder="Filter Color"
+            :options="[...new Set(productsDetail.map((item) => item.sku))]"
+            placeholder="SKU"
             style="min-width: 1rem"
             :maxSelectedLabels="1"
           >
@@ -153,7 +169,7 @@
         header="SIZE"
       >
         <template #body="{ data }">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center justify-center gap-2">
             <span>{{ data.size }}</span>
           </div>
         </template>
@@ -164,7 +180,7 @@
             v-model="filterModel.value"
             @change="filterCallback()"
             :options="[...new Set(productsDetail.map((item) => item.size))]"
-            placeholder="Filter Size"
+            placeholder="Size"
             style="min-width: 1rem"
             :maxSelectedLabels="1"
           >
@@ -176,20 +192,32 @@
           </MultiSelect>
         </template>
       </Column>
-      <Column field="price" sortable header="Price/Qty" />
+      <Column field="total_qty" sortable header="TotalQty" />
       <Column
         class="font-bold"
-        field="shopify_InventoryQty"
+        field="gross_sales"
         sortable
-        header="InventoryQty"
+        header="GrossSales"
       />
       <Column
         class="font-bold"
-        field="rfidScan"
+        field="total_discount"
         sortable
-        header="RFIDRegister"
+        header="TotalDiscount"
       />
-
+      <Column class="font-bold" field="net_sales" sortable header="NetSales" />
+      <Column
+        class="font-bold"
+        field="total_taxes"
+        sortable
+        header="TotalTaxes"
+      />
+      <Column
+        class="font-bold"
+        field="distinct_orders"
+        sortable
+        header="DistinctOrders"
+      />
       <template #footer>
         In total there are
         {{ productsDetail ? productsDetail.length : 0 }}
@@ -200,7 +228,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Product, ProductDetail } from "@/types/type";
+import type { Product, ProductDetail, SalesDaily } from "@/types/type";
 import { ref, onMounted, watch } from "vue";
 import { FilterMatchMode } from "@primevue/core/api";
 // import { ProductService } from "@/service/ProductService";
@@ -210,17 +238,17 @@ const emits = defineEmits<{
   (e: "clear", value: boolean): void;
 }>();
 const props = defineProps<{
-  productDetails: Product[];
+  productDetails: SalesDaily[];
   NotConnectCount?: number;
 }>();
 const isScan = ref<boolean>(false);
 const dt = ref();
-const productsDetail = ref<Product[]>([]);
+const productsDetail = ref<SalesDaily[]>([]);
 const filters = ref({
   sku: { value: null, matchMode: FilterMatchMode.IN },
+  source_name: { value: null, matchMode: FilterMatchMode.IN },
+  order_date: { value: null, matchMode: FilterMatchMode.IN },
   size: { value: null, matchMode: FilterMatchMode.IN },
-  color: { value: null, matchMode: FilterMatchMode.IN },
-  style: { value: null, matchMode: FilterMatchMode.IN },
 });
 
 const exportCSV = () => {
