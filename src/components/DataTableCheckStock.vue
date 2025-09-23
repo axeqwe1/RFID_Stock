@@ -224,7 +224,8 @@ const filters = ref({
 });
 
 const exportCSV = () => {
-  dt.value.exportCSV();
+  const today = new Date().toISOString().split("T")[0];
+  dt.value.exportCSV({ filename: `stockrfid-shopify-${today}.csv` });
 };
 onMounted(() => {
   productsDetail.value = props.productDetails;
