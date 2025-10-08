@@ -1,6 +1,7 @@
 <template>
   <div class="card">
     <DataTable
+      @filter="onFilter"
       :value="productsDetail"
       v-model:filters="filters"
       filterDisplay="row"
@@ -168,7 +169,7 @@
           ></Slider>
           <div class="flex items-center justify-between px-2">
             <span>{{ filterModel.value ? filterModel.value[0] : 0 }}</span>
-            <span>{{ filterModel.value[1] }}</span>
+            <span>{{ filterModel.value ? filterModel.value[1] : 0 }}</span>
             <span>{{ maxAvailableStock }}</span>
           </div>
         </template>
@@ -190,8 +191,7 @@ import { FilterMatchMode } from "@primevue/core/api";
 // import { ProductService } from "@/service/ProductService";
 
 const emits = defineEmits<{
-  (e: "scan", value: boolean): void;
-  (e: "clear", value: boolean): void;
+  (e: "on-filter", totalQty: number): void;
 }>();
 const props = defineProps<{
   productDetails: WarehouseStock[];
@@ -211,6 +211,21 @@ const exportCSV = () => {
   const today = new Date().toISOString().split("T")[0];
   dt.value.exportCSV({ filename: `stockrfid-shopify-${today}.csv` });
 };
+
+const totalAvailableStock = ref<number>(0);
+const onFilter = (e: any) => {
+  // e.filteredValue = แถวที่ถูก filter แล้ว
+
+  totalAvailableStock.value = e.filteredValue
+    ? e.filteredValue.reduce(
+        (sum: any, cur: any) => sum + cur.availableStock,
+        0
+      )
+    : 0;
+
+  emits("on-filter", totalAvailableStock.value);
+};
+
 onMounted(() => {
   productsDetail.value = props.productDetails;
 });
