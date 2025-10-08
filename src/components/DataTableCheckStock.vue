@@ -22,7 +22,7 @@
         <div
           class="flex flex-wrap items-center justify-between gap-2 sticky top-0"
         >
-          <span class="text-xl font-bold">Products</span>
+          <span class="text-xl font-bold">Check Stock</span>
           <div class="text-end pb-4">
             <Button
               icon="pi pi-external-link"
