@@ -12,11 +12,13 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     CardSection: typeof import('./src/components/CardSection.vue')['default']
     Column: typeof import('primevue/column')['default']
+    copy: typeof import('./src/components/DataTableCheckStock copy.vue')['default']
     DataTable: typeof import('primevue/datatable')['default']
     DataTableCheckStock: typeof import('./src/components/DataTableCheckStock.vue')['default']
     DataTableRegister: typeof import('./src/components/DataTableRegister.vue')['default']
     DataTableScanStock: typeof import('./src/components/DataTableScanStock.vue')['default']
     DataTableShopifySale: typeof import('./src/components/DataTableShopifySale.vue')['default']
+    DataTableWarehouseStock: typeof import('./src/components/DataTableWarehouseStock.vue')['default']
     DataView: typeof import('./src/components/DataView.vue')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']
@@ -25,6 +27,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/Sidebar.vue')['default']
     SignalR: typeof import('./src/components/SignalR.vue')['default']
+    Slider: typeof import('primevue/slider')['default']
     Topbar: typeof import('./src/components/Topbar.vue')['default']
   }
 }

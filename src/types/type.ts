@@ -64,6 +64,13 @@ export interface SalesDaily {
   total_taxes?: number;
   distinct_orders?: number;
 }
+
+export interface WarehouseStock {
+  locationId: number;
+  warehouse: string;
+  address: string;
+  availableStock: number;
+}
 // export interface ProductRFID {
 //   style: string;
 //   styleCustomer: string;

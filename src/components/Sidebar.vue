@@ -269,6 +269,11 @@ const items = ref([
         icon: "pi pi-box",
         route: "/checkstock",
       },
+      {
+        label: "Warehouse Stock",
+        icon: "pi pi-warehouse",
+        route: "/warehousestock",
+      },
     ],
   },
   {
