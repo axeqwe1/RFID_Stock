@@ -1,6 +1,7 @@
 import axios from "axios";
 import { apiService, rfidService } from "../service";
 import type { AddRfidRequest } from "@/data/requestDTO/AddRFIDRequest";
+import type { DeleteProductRFIDRequest } from "@/data/requestDTO/DeleteProudctRFID";
 // import type { LoginRequest } from "@/data/dto/request/auth";
 
 // export const login = async (data: LoginRequest) => {
@@ -46,6 +47,16 @@ export const AddRfidToProduct = async (request: AddRfidRequest[]) => {
   try {
     console.log(request);
     const res = await apiService.post(API_PATH + "AddRfidToProduct", request);
+    return res;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};
+
+export const DeleteRfidProduct = async (data: DeleteProductRFIDRequest[]) => {
+  try {
+    const res = await apiService.post(API_PATH + "DeleteProductRFID", data);
     return res;
   } catch (err) {
     console.error(err);

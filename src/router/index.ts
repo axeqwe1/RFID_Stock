@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import("../view/RFIDRegister.vue"),
     },
     {
+      path: "/deleterfid",
+      name: "deleterfid",
+      component: () => import("../view/RFIDDeleteView.vue"),
+    },
+    {
       path: "/test",
       name: "test",
       component: () => import("../components/SignalR.vue"),

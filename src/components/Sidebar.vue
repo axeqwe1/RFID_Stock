@@ -252,6 +252,11 @@ const items = ref([
             icon: "pi pi-fw pi-folder",
             route: "/rfidregister",
           },
+          {
+            label: "Delete RFID",
+            icon: "pi pi-fw pi-folder",
+            route: "/deleterfid",
+          },
         ],
       },
       {
