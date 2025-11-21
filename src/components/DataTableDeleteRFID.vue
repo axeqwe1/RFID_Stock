@@ -28,7 +28,15 @@
           />
         </template>
       </Column>
-      <Column field="rfid" header="RFID" />
+      <Column field="rfid" header="RFID">
+        <template #filter="{ filterCallback, filterModel }">
+          <InputText
+            label="Search EPC"
+            @input="filterCallback"
+            v-model="filterModel.value"
+          />
+        </template>
+      </Column>
       <Column field="createDate" header="Register Date" :showFilterMenu="false">
         <template #body="{ data }">
           <div>
@@ -121,7 +129,7 @@ const selectedData = ref<ProductRFID[] | null>(null);
 const visible = ref<boolean>(false);
 const filters = ref({
   sku: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  rfid: { value: null, matchMode: FilterMatchMode.IN },
+  rfid: { value: null, matchMode: FilterMatchMode.CONTAINS },
   createDate: { value: null, matchMode: FilterMatchMode.BETWEEN }, // 👈 ใช้ BETWEEN
 });
 const dateRange = ref();

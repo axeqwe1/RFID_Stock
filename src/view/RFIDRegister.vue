@@ -166,7 +166,7 @@ import { AddRfidToProduct, GetProductData } from "@/lib/api/Product";
 import type { Product } from "@/types/type";
 import { item } from "@primeuix/themes/aura/breadcrumb";
 import type { AxiosResponse } from "axios";
-// 🎯 วิธีที่ 1: ใช้ type ที่ PrimeVue คาดหวัง (ง่ายที่สุด)
+
 const toast = useToast() as any;
 const filteredProduct = ref<any[]>([]);
 const datas = ref();
@@ -306,16 +306,6 @@ const onFormSubmit = async (event: any) => {
       life: 3000,
     });
   }
-  // if (valid) {
-  //   console.log("Username:", values.username);
-
-  //   toast.add({
-  //     severity: "success",
-  //     summary: "Form is submitted.",
-  //     detail: `Welcome, ${values.username}!`,
-  //     life: 3000,
-  //   });
-  // }
 };
 const submitForm = () => {
   formRef.value.submit(); // เรียก submit ผ่าน ref
