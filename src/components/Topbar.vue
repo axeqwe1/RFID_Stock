@@ -81,6 +81,7 @@
                   class="w-full h-full flex flex-col gap-6 justify-center items-center"
                 >
                   <div class="flex flex-col justify-start items-start gap-3">
+                    <label class="text-lg font-bold">TCP Connect Setting</label>
                     <div
                       class="flex flex-row gap-6 justify-center items-center"
                     >
@@ -94,9 +95,49 @@
                         v-model="modelNetConfig.PORT"
                       />
                     </div>
+                    <label class="text-lg font-bold"
+                      >Setting Range Detect RFID</label
+                    >
                     <div
                       class="flex flex-row gap-6 justify-center items-center"
-                    ></div>
+                    >
+                      <div class="flex items-center gap-2">
+                        <RadioButton
+                          v-model="range"
+                          inputId="range1"
+                          name="pizza"
+                          value="Close"
+                        />
+                        <label for="range1">Close</label>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <RadioButton
+                          v-model="range"
+                          inputId="range2"
+                          name="pizza"
+                          value="Medium"
+                        />
+                        <label for="range2">Medium</label>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <RadioButton
+                          v-model="range"
+                          inputId="range3"
+                          name="pizza"
+                          value="High"
+                        />
+                        <label for="range3">High</label>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <RadioButton
+                          v-model="range"
+                          inputId="range4"
+                          name="pizza"
+                          value="None"
+                        />
+                        <label for="range4">None</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </TabPanel>
@@ -131,6 +172,7 @@ const visible = ref(false);
 //   ant3: number;
 //   ant4: number;
 // });
+const range = ref();
 const modelNetConfig = reactive({
   IP: "",
   PORT: "",
@@ -141,6 +183,8 @@ defineEmits(["toggleSidebar"]);
 onMounted(() => {
   modelNetConfig.IP = store.IP;
   modelNetConfig.PORT = store.PORT;
+  let rangeValue = localStorage.getItem("rangeSetting");
+  range.value = rangeValue;
 });
 watch(
   () => [store.IP, store.PORT],
@@ -152,6 +196,10 @@ watch(
 watch(modelNetConfig, () => {
   store.SETNETWORK(modelNetConfig.IP, modelNetConfig.PORT);
   console.log(store.IP, ":", store.PORT);
+});
+watch(range, (newVal) => {
+  console.log(newVal);
+  localStorage.setItem("rangeSetting", newVal);
 });
 </script>
 

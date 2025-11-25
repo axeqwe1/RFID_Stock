@@ -253,6 +253,11 @@ const items = ref([
             route: "/rfidregister",
           },
           {
+            label: "RegisterBySKU",
+            icon: "pi pi-fw pi-folder",
+            route: "/rfidregisterBySKU",
+          },
+          {
             label: "Delete RFID",
             icon: "pi pi-fw pi-folder",
             route: "/deleterfid",

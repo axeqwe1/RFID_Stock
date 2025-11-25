@@ -6,3 +6,7 @@ export interface AddRfidRequest {
   targetQty: number;
   EPC: string;
 }
+export interface AddRfidBySKURequest {
+  SKU: string;
+  EPC: string;
+}

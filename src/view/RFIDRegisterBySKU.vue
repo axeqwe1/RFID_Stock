@@ -2,124 +2,43 @@
   <div class="card flex justify-center">
     <Toast />
 
-    <Form
-      ref="formRef"
-      v-slot="$form"
-      :initialValues
-      :resolver
-      @submit="onFormSubmit"
-      class="flex flex-col gap-4 w-full max-w-[1300px] mx-auto"
-    >
-      <div class="flex flex-row items-center justify-center gap-4 w-full">
-        <div class="flex flex-col gap-1 w-full relative">
-          <label>Barcode</label>
-          <InputText
-            v-model="initialValues.barcode"
-            name="barcode"
-            :disabled="!isScan"
-            type="text"
-            placeholder="Barcode"
-            fluid
-          />
-          <button @click="searchBarcode" class="absolute top-7 right-0 btn">
-            Search
-          </button>
-          <Message
-            v-if="$form.productname?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.productname.error?.message }}</Message
-          >
-        </div>
-        <div class="flex flex-col gap-1 w-full">
-          <label>Style</label>
-          <AutoComplete
-            name="stylename.style"
-            placeholder="style"
-            optionLabel="style"
-            :disabled="!isScan"
-            :suggestions="filteredProduct"
-            v-model="initialValues.stylename.style"
-            @complete="searchProduct"
-            fluid
-          />
-
-          <Message
-            v-if="$form.style?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.style.error?.message }}</Message
-          >
-        </div>
-        <div class="flex flex-col gap-1 w-full">
-          <label>Color</label>
-          <InputText
-            v-model="initialValues.color"
-            name="color"
-            :disabled="!isScan"
-            type="text"
-            placeholder="Color"
-            fluid
-          />
-          <Message
-            v-if="$form.color?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.color.error?.message }}</Message
-          >
-        </div>
-        <div class="flex flex-col gap-1 w-full">
-          <label>Size</label>
-          <InputText
-            v-model="initialValues.size"
-            name="size"
-            :disabled="!isScan"
-            type="text"
-            placeholder="Size"
-            fluid
-          />
-          <Message
-            v-if="$form.size?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.size.error?.message }}</Message
-          >
-        </div>
-        <div class="flex flex-col gap-1 w-full">
-          <label>Target Qty (Optional)</label>
-          <InputNumber
-            v-model="initialValues.targetQty"
-            name="targetQty"
-            type="number"
-            :disabled="!isScan"
-            placeholder="Target QTY"
-            fluid
-            :min="0"
-          />
-          <Message
-            v-if="$form.targetQty?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $form.targetQty.error?.message }}</Message
-          >
-        </div>
+    <div class="flex flex-row items-center justify-center gap-4 w-full">
+      <div class="flex flex-col gap-1 w-full">
+        <label>SKU</label>
+        <Select
+          v-model="selectedSku"
+          :options="skuList"
+          filter
+          placeholder="Select a Sku"
+          class="w-full md:w-56"
+          :disabled="!isScan"
+        >
+          <template #value="slotProps">
+            <div v-if="slotProps.value" class="flex items-center">
+              <div>{{ slotProps.value }}</div>
+            </div>
+            <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
+          </template>
+          <template #option="slotProps">
+            <div class="flex items-center">
+              <div>{{ slotProps.option }}</div>
+            </div>
+          </template>
+        </Select>
       </div>
-      <Button @click="visible = true" severity="primary" label="Submit" />
+    </div>
+    <Button @click="visible = true" severity="primary" label="Submit" />
 
-      <DataTableComponent
-        @startscan="onScan"
-        @clear="onClear"
-        :targetQty="initialValues.targetQty"
-        :listData="listData"
-        :invalidCount="invalidCount"
-        :NotConnectCount="NotConnectCount"
-      />
-    </Form>
+    <DataTableComponent
+      @startscan="onScan"
+      @clear="onClear"
+      :targetQty="initialValues.targetQty"
+      :listData="listData"
+      :invalidCount="invalidCount"
+      :NotConnectCount="NotConnectCount"
+    />
   </div>
   <Dialog
     v-model:visible="visible"
@@ -151,7 +70,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
-
+import Select from "primevue/select";
 import { useToast } from "primevue/usetoast";
 import DataTableComponent from "@/components/DataTableRegister.vue";
 import Dialog from "primevue/dialog";
@@ -162,8 +81,15 @@ import {
 } from "@/services/signalRService";
 import type { HubConnection } from "@microsoft/signalr";
 import { startRfid, stopRfid } from "@/lib/api/RFID";
-import type { AddRfidRequest } from "@/data/requestDTO/AddRFIDRequest";
-import { AddRfidToProduct, GetProductData } from "@/lib/api/Product";
+import type {
+  AddRfidBySKURequest,
+  AddRfidRequest,
+} from "@/data/requestDTO/AddRFIDRequest";
+import {
+  AddRfidToProduct,
+  AddRfidToProductBySKU,
+  GetProductData,
+} from "@/lib/api/Product";
 import type { Product } from "@/types/type";
 import { item } from "@primeuix/themes/aura/breadcrumb";
 import type { AxiosResponse } from "axios";
@@ -175,12 +101,13 @@ const visible = ref(false);
 const formRef = ref();
 const connection = ref<HubConnection | null>(null);
 const listData = ref<string[]>([]);
-const requestData = ref<AddRfidRequest[]>([]);
+const requestData = ref<AddRfidBySKURequest[]>([]);
 const invalidCount = ref<number>(0);
 const NotConnectCount = ref<number>(0);
 const isScan = ref<boolean>(true);
 const Productdata = ref<Product[]>([]);
-const styleList = ref<{ style: string }[]>([]);
+const skuList = ref<string[]>([]);
+const selectedSku = ref<string>("Select");
 const isConnected = ref<boolean>(false);
 // ใช้ any กับข้อมูลฟอร์ม เพราะ PrimeVue ต้องการ Record<string, any>
 const initialValues = reactive({
@@ -206,58 +133,6 @@ const resolver = (options: any) => {
   };
 };
 
-const searchProduct = (event: any) => {
-  setTimeout(() => {
-    if (!event.query.trim().length) {
-      filteredProduct.value = [...Productdata.value];
-    } else {
-      // filter ตาม query
-      let temp = Productdata.value.filter((data) =>
-        data.style.toLowerCase().startsWith(event.query.toLowerCase())
-      );
-
-      // unique ตาม style โดยเก็บ object ครบ
-      const uniqueMap = new Map<string, (typeof temp)[0]>();
-      temp.forEach((item) => {
-        if (!uniqueMap.has(item.style)) {
-          uniqueMap.set(item.style, item);
-        }
-      });
-
-      filteredProduct.value = Array.from(uniqueMap.values());
-
-      // ถ้าต้องการสร้าง styleList (แค่ style) แยกออก
-      filteredProduct.value = filteredProduct.value.map((item) => ({
-        style: item.style,
-      }));
-
-      console.log(filteredProduct.value);
-      console.log(styleList.value);
-    }
-  }, 250);
-};
-const searchBarcode = (event: Event) => {
-  event.preventDefault();
-  const filterBarcode = Productdata.value.find((item) => {
-    return initialValues.barcode === item.barcode;
-  });
-
-  if (filterBarcode) {
-    initialValues.color = filterBarcode.color;
-    initialValues.stylename.style = filterBarcode.style;
-    initialValues.size = filterBarcode.size;
-  } else {
-    initialValues.color = "";
-    initialValues.stylename.style = "";
-    initialValues.size = "";
-    toast.add({
-      severity: "warn",
-      summary: "Not Found data in Barcode.",
-      detail: `Not Found data in Barcode !`,
-      life: 3000,
-    });
-  }
-};
 function resetData() {
   visible.value = false;
   initialValues.color = "";
@@ -269,11 +144,12 @@ function resetData() {
   isScan.value = true;
 }
 // ใช้ type ตาม PrimeVue คาดหวัง
-const onFormSubmit = async (event: any) => {
-  const { valid, values } = event;
+const onFormSubmit = async () => {
   // console.log(requestData.value.map((item) => item.EPC).length);
   if (validateField() && requestData.value.map((item) => item.EPC).length > 0) {
-    const res = (await AddRfidToProduct(requestData.value)) as AxiosResponse;
+    const res = (await AddRfidToProductBySKU(
+      requestData.value
+    )) as AxiosResponse;
     if (res.status === 200) {
       resetData();
       toast.add({
@@ -383,26 +259,21 @@ onMounted(async () => {
       }
     });
     connection.value.on("ReceiveRFIDData", (message) => {
-      // console.log(message);
       isConnected.value = true;
       if (message.RSSI > rangeValue) {
         listData.value.push(message.EPC);
         listData.value = [...new Set(listData.value)];
       }
 
-      const newEPC: AddRfidRequest = {
-        Barcode: initialValues.barcode,
-        Style: initialValues.stylename.style,
-        Color: initialValues.color,
-        Size: initialValues.size,
-        targetQty: initialValues.targetQty,
-        EPC: message.EPC,
+      const newEPC: AddRfidBySKURequest = {
+        SKU: initialValues.barcode,
+        EPC: message,
       };
       const index = requestData.value.findIndex((i) => i.EPC === newEPC.EPC);
       if (index > -1) {
-        requestData.value[index] = newEPC; // update ตัวเก่า
+        requestData.value[index] = newEPC;
       } else {
-        requestData.value.push(newEPC); // insert ตัวใหม่
+        requestData.value.push(newEPC);
       }
       console.log(requestData.value);
     });
@@ -454,7 +325,7 @@ onMounted(async () => {
     Productdata.value = res.data;
   };
   await fetchData();
-
+  skuList.value = Productdata.value.map((item) => item.sku);
   console.log(Productdata.value);
 });
 onUnmounted(() => {
