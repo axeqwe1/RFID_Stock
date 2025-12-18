@@ -265,6 +265,18 @@ const items = ref([
         ],
       },
       {
+        label: "Receive to Stock and Register RFID",
+        icon: "pi pi-plus",
+        active: false,
+        items: [
+          {
+            label: "Receive and Register",
+            icon: "pi pi-fw pi-folder",
+            route: "/receivetostockandregister",
+          },
+        ],
+      },
+      {
         label: "SCAN Stock",
         icon: "pi pi-search",
         route: "/scan",
@@ -317,23 +329,23 @@ const items = ref([
 
 /* Staggered animation for child items */
 .submenu-container.active button {
-  animation: slideInFromLeft 0.3s ease-out forwards;
+  animation: slideInFromLeft 0.5s ease-out forwards;
 }
 
 .submenu-container.active button:nth-child(1) {
   animation-delay: 0.1s;
 }
 .submenu-container.active button:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.submenu-container.active button:nth-child(3) {
   animation-delay: 0.2s;
 }
+.submenu-container.active button:nth-child(3) {
+  animation-delay: 0.3s;
+}
 .submenu-container.active button:nth-child(4) {
-  animation-delay: 0.25s;
+  animation-delay: 0.4s;
 }
 .submenu-container.active button:nth-child(5) {
-  animation-delay: 0.3s;
+  animation-delay: 0.5s;
 }
 
 @keyframes slideInFromLeft {

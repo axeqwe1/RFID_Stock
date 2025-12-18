@@ -6,6 +6,7 @@ import router from "./router";
 import Aura from "@primeuix/themes/aura";
 import Button from "primevue/button";
 import Toast from "primevue/toast";
+import ConfirmationService from "primevue/confirmationservice";
 import ToastService from "primevue/toastservice";
 import "./Global.css";
 import "primeicons/primeicons.css";
@@ -19,6 +20,7 @@ app.use(PrimeVue, {
   },
 });
 app.use(ToastService);
+app.use(ConfirmationService);
 app.component("Toast", Toast);
 app.component("Form", Form);
 app.use(router);

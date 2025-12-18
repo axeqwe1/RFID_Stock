@@ -167,6 +167,7 @@ import { AddRfidToProduct, GetProductData } from "@/lib/api/Product";
 import type { Product } from "@/types/type";
 import { item } from "@primeuix/themes/aura/breadcrumb";
 import type { AxiosResponse } from "axios";
+import { useMaster } from "@/stores/MasterStore";
 
 const toast = useToast() as any;
 const filteredProduct = ref<any[]>([]);
@@ -182,6 +183,7 @@ const isScan = ref<boolean>(true);
 const Productdata = ref<Product[]>([]);
 const styleList = ref<{ style: string }[]>([]);
 const isConnected = ref<boolean>(false);
+const store = useMaster();
 // ใช้ any กับข้อมูลฟอร์ม เพราะ PrimeVue ต้องการ Record<string, any>
 const initialValues = reactive({
   barcode: "",
@@ -354,17 +356,6 @@ onMounted(async () => {
   }
   createSignalRConnection(import.meta.env.VITE_HUB_URL);
   connection.value = getSignalRConnection();
-  let rangeSetting = localStorage.getItem("rangeSetting");
-  let rangeValue = 0;
-  if (rangeSetting === "Close") {
-    rangeValue = -33;
-  }
-  if (rangeSetting === "Medium") {
-    rangeValue = -55;
-  }
-  if (rangeSetting === "High") {
-    rangeValue = -85;
-  }
   if (connection.value) {
     connection.value.on("ReceiveRFIDUpdate", (message) => {
       console.log(message);
@@ -385,8 +376,18 @@ onMounted(async () => {
     connection.value.on("ReceiveRFIDData", (message) => {
       // console.log(message);
       isConnected.value = true;
-      if (message.RSSI > rangeValue) {
-        listData.value.push(message.EPC);
+      let rangeValue = 0;
+      if (store.RANGE_READER === "Close") {
+        rangeValue = -33;
+      } else if (store.RANGE_READER === "Medium") {
+        rangeValue = -55;
+      } else if (store.RANGE_READER === "High") {
+        rangeValue = -85;
+      } else {
+        rangeValue = -999;
+      }
+      if (message.rssi > rangeValue) {
+        listData.value.push(message.epc);
         listData.value = [...new Set(listData.value)];
       }
 
@@ -396,12 +397,12 @@ onMounted(async () => {
         Color: initialValues.color,
         Size: initialValues.size,
         targetQty: initialValues.targetQty,
-        EPC: message.EPC,
+        EPC: message.epc,
       };
       const index = requestData.value.findIndex((i) => i.EPC === newEPC.EPC);
       if (index > -1) {
         requestData.value[index] = newEPC; // update ตัวเก่า
-      } else {
+      } else if (message.rssi > rangeValue) {
         requestData.value.push(newEPC); // insert ตัวใหม่
       }
       console.log(requestData.value);

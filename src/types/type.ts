@@ -47,7 +47,12 @@ export interface ProductDetail {
 export interface ProductRFID {
   sku: string;
   rfid: string;
+  status?: boolean;
   createDate: Date;
+  ReceiveNo?: string;
+  PONo?: string;
+  POItemNo?: string;
+  UOM?: string;
 }
 
 export interface SalesDaily {

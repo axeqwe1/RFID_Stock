@@ -93,6 +93,7 @@ import {
 import type { Product } from "@/types/type";
 import { item } from "@primeuix/themes/aura/breadcrumb";
 import type { AxiosResponse } from "axios";
+import { useMaster } from "@/stores/MasterStore";
 
 const toast = useToast() as any;
 const filteredProduct = ref<any[]>([]);
@@ -109,6 +110,7 @@ const Productdata = ref<Product[]>([]);
 const skuList = ref<string[]>([]);
 const selectedSku = ref<string>("Select");
 const isConnected = ref<boolean>(false);
+const store = useMaster();
 // ใช้ any กับข้อมูลฟอร์ม เพราะ PrimeVue ต้องการ Record<string, any>
 const initialValues = reactive({
   barcode: "",
@@ -146,7 +148,7 @@ function resetData() {
 // ใช้ type ตาม PrimeVue คาดหวัง
 const onFormSubmit = async () => {
   // console.log(requestData.value.map((item) => item.EPC).length);
-  if (validateField() && requestData.value.map((item) => item.EPC).length > 0) {
+  if (requestData.value.map((item) => item.EPC).length > 0) {
     const res = (await AddRfidToProductBySKU(
       requestData.value
     )) as AxiosResponse;
@@ -184,32 +186,24 @@ const onFormSubmit = async () => {
     });
   }
 };
-const submitForm = () => {
-  formRef.value.submit(); // เรียก submit ผ่าน ref
+const submitForm = async () => {
+  await onFormSubmit();
 };
 const onScan = async (isScaned: boolean) => {
   console.log(isScaned);
 
-  if (isScaned && !validateField()) {
-    await stopRfid();
-    invalidCount.value++;
-  } else {
-    if (requestData.value.length < 1 && isConnected.value) {
-      isScan.value = !isScaned;
-    }
-    isScaned ? await startRfid() : await stopRfid();
-  }
-  if (!isConnected.value) {
-    // await stopRfid();
-    toast.add({
-      severity: "error",
-      summary: "Please connect the RFID device.",
-      detail: `Please connect the RFID device!`,
-      life: 3000,
-    });
-    isScan.value = true;
-    NotConnectCount.value++;
-  }
+  isScaned ? await startRfid() : await stopRfid();
+  // if (!isConnected.value) {
+  //   // await stopRfid();
+  //   toast.add({
+  //     severity: "error",
+  //     summary: "Please connect the RFID device.",
+  //     detail: `Please connect the RFID device!`,
+  //     life: 3000,
+  //   });
+  //   isScan.value = true;
+  //   NotConnectCount.value++;
+  // }
 };
 const onClear = (clear: boolean) => {
   if (clear) {
@@ -230,17 +224,7 @@ onMounted(async () => {
   }
   createSignalRConnection(import.meta.env.VITE_HUB_URL);
   connection.value = getSignalRConnection();
-  let rangeSetting = localStorage.getItem("rangeSetting");
-  let rangeValue = 0;
-  if (rangeSetting === "Close") {
-    rangeValue = -33;
-  }
-  if (rangeSetting === "Medium") {
-    rangeValue = -55;
-  }
-  if (rangeSetting === "High") {
-    rangeValue = -85;
-  }
+
   if (connection.value) {
     connection.value.on("ReceiveRFIDUpdate", (message) => {
       console.log(message);
@@ -260,14 +244,26 @@ onMounted(async () => {
     });
     connection.value.on("ReceiveRFIDData", (message) => {
       isConnected.value = true;
-      if (message.RSSI > rangeValue) {
-        listData.value.push(message.EPC);
+      let rangeValue = 0;
+      if (store.RANGE_READER === "Close") {
+        rangeValue = -33;
+      }
+      if (store.RANGE_READER === "Medium") {
+        rangeValue = -55;
+      }
+      if (store.RANGE_READER === "High") {
+        rangeValue = -85;
+      } else {
+        rangeValue = -999;
+      }
+      if (message.rssi > rangeValue) {
+        listData.value.push(message.epc);
         listData.value = [...new Set(listData.value)];
       }
 
       const newEPC: AddRfidBySKURequest = {
-        SKU: initialValues.barcode,
-        EPC: message,
+        SKU: selectedSku.value,
+        EPC: message.epc,
       };
       const index = requestData.value.findIndex((i) => i.EPC === newEPC.EPC);
       if (index > -1) {
@@ -287,30 +283,6 @@ onMounted(async () => {
   }
   datas.value = [{ name: "test" }];
 });
-
-function validateField() {
-  // ตรวจสอบว่ามี field ใดว่างเปล่าหรือไม่
-  if (
-    initialValues.barcode.trim() === "" ||
-    initialValues.stylename.style.trim() === "" ||
-    initialValues.color.trim() === "" ||
-    initialValues.size.trim() === "" ||
-    initialValues.targetQty < 0 ||
-    initialValues.targetQty == null
-  ) {
-    // แสดงข้อความแจ้งเตือน
-    toast.add({
-      severity: "error",
-      summary: "Request is invalid", // หรือ "ส่งข้อมูลไม่สำเร็จ"
-      detail: "Please complete all required fields", // หรือ "Please complete all required fields."
-      life: 3000,
-    });
-    // เพิ่มการ return false เพื่อบอกว่าการ validate ไม่ผ่าน
-    return false;
-  }
-  // return true หากทุกอย่างถูกต้อง
-  return true;
-}
 
 watch(requestData, (newVal) => {
   if (requestData.value.length > 0) {

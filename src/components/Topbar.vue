@@ -185,6 +185,7 @@ onMounted(() => {
   modelNetConfig.PORT = store.PORT;
   let rangeValue = localStorage.getItem("rangeSetting");
   range.value = rangeValue;
+  if (rangeValue) store.RANGE_READER = rangeValue;
 });
 watch(
   () => [store.IP, store.PORT],
@@ -198,8 +199,8 @@ watch(modelNetConfig, () => {
   console.log(store.IP, ":", store.PORT);
 });
 watch(range, (newVal) => {
-  console.log(newVal);
   localStorage.setItem("rangeSetting", newVal);
+  store.RANGE_READER = newVal;
 });
 </script>
 

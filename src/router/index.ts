@@ -24,6 +24,38 @@ const router = createRouter({
       component: () => import("../view/RFIDRegisterBySKU.vue"),
     },
     {
+      path: "/receivetostockandregister",
+      name: "receivetostockandregister",
+      component: () =>
+        import("@/features/ReceiveStockAndRegister/ui/page/page.vue"),
+      children: [
+        {
+          path: "",
+          name: "MainComponent",
+          component: () =>
+            import(
+              "../features/ReceiveStockAndRegister/ui/components/MainComponent.vue"
+            ),
+        },
+        {
+          path: "receive",
+          name: "ReceiveComponent",
+          component: () =>
+            import(
+              "../features/ReceiveStockAndRegister/ui/components/ReceiveStockComponent.vue"
+            ),
+        },
+        {
+          path: "register",
+          name: "RegisterComponent",
+          component: () =>
+            import(
+              "@/features/ReceiveStockAndRegister/ui/components/RegisterRFIDComponent.vue"
+            ),
+        },
+      ],
+    },
+    {
       path: "/deleterfid",
       name: "deleterfid",
       component: () => import("../view/RFIDDeleteView.vue"),

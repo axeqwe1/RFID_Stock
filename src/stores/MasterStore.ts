@@ -5,6 +5,8 @@ export const useMaster = defineStore("master", () => {
   const MASTER_PRODUCT = ref();
   const IP = ref<string>("");
   const PORT = ref<string>("");
+  const RANGE_READER = ref<string>("");
+  const COMPANY = ref<string>("FPSTH");
   const SETNETWORK = async (IPConf: string, PORTConf: string) => {
     IP.value = IPConf;
     PORT.value = PORTConf;
@@ -18,5 +20,13 @@ export const useMaster = defineStore("master", () => {
     }
   };
 
-  return { MASTER_PRODUCT, FETCH_MASTER_DATA, IP, PORT, SETNETWORK };
+  return {
+    MASTER_PRODUCT,
+    FETCH_MASTER_DATA,
+    IP,
+    PORT,
+    SETNETWORK,
+    RANGE_READER,
+    COMPANY,
+  };
 });
