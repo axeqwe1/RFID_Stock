@@ -241,6 +241,7 @@
           "
           type="submit"
           fluid
+          :disabled="RECEIVE_STORE.listDataRFIDPO.length < 1"
         />
       </div>
     </div>
@@ -394,6 +395,7 @@ const onDelete = () => {
             detail: "Delete data success",
             life: 3000,
           });
+          resetForm();
           router.push("/receivetostockandregister");
         } else {
           toast.add({
@@ -503,10 +505,8 @@ const autorunReceiveNo = async () => {
   });
 };
 const resetForm = async () => {
-  await nextTick();
-
   // reset form ทั้งหมด
-  formRef.value.reset();
+  // formRef.value.reset();
 
   // set ค่า default หลัง reset
   formRef.value.setValues({
@@ -515,6 +515,7 @@ const resetForm = async () => {
 
   // reset RFID list
   RECEIVE_STORE.listDataRFIDPO = [];
+  await nextTick();
 };
 onMounted(async () => {
   const res = await GetWarehouseOptions();
@@ -567,7 +568,6 @@ watch(
 
 onUnmounted(() => {
   RECEIVE_STORE.editReceiveId = null;
-  resetForm();
 });
 </script>
 

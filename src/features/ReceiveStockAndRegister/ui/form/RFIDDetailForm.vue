@@ -11,6 +11,7 @@
             name="POno"
             placeholder="Select a PO No."
             class="w-full"
+            size="small"
             fluid
             filter
           />
@@ -33,20 +34,47 @@
         <DataTable
           :value="listData"
           v-model:selection="selectData"
+          v-model:filters="filters"
           selectionMode="single"
+          filter-display="menu"
           paginator
           :rows="5"
           :rowsPerPageOptions="[5, 10, 20, 50]"
           showGridlines
           scrollable
-          scrollHeight="300px"
+          scrollHeight="350px"
         >
           <Column
             v-for="col in InternalPoDetailColumns"
             :key="col.field"
             :field="col.field"
             :header="col.header"
+            :filter="col.filter"
           >
+            <template
+              v-if="col.field == 'itemCode'"
+              #filter="{ filterCallback, filterModel }"
+            >
+              <InputText
+                v-model="filterModel.value"
+                size="small"
+                type="text"
+                @input="filterCallback"
+                placeholder="Search By ProductCode"
+              />
+            </template>
+            <template
+              v-if="col.field == 'sku'"
+              #filter="{ filterCallback, filterModel }"
+            >
+              <InputText
+                v-model="filterModel.value"
+                size="small"
+                type="text"
+                @input="filterCallback"
+                placeholder="Search By SKU"
+              />
+            </template>
           </Column>
         </DataTable>
       </div>
@@ -63,6 +91,7 @@ import RFIDTable from "../components/table/RFIDTable.vue";
 
 import Select from "primevue/select";
 import { PoDetailColumns } from "../components/table/columns/RFIDFormTableColumn";
+import { FilterMatchMode, FilterOperator } from "@primevue/core/api";
 import { nextTick, onMounted, ref, watch } from "vue";
 import { apiService } from "@/lib/service";
 import type { PODescType } from "../../types/poType";
@@ -76,7 +105,12 @@ const receiveQty = ref<number>(0);
 
 const listData = ref<POProductDetailDTO[]>([]);
 const PoOptions = ref<PODescType[]>([]);
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 
+  itemCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  sku: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 const AddRfid = async (value: RFIDType[]) => {
   await nextTick(); // รอให้ selectData อัปเดตครบก่อน
 

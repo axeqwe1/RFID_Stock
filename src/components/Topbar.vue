@@ -61,7 +61,14 @@
           </li>
         </ul>
       </div> -->
-      <Button label="Settings" @click="visible = true" />
+      <div class="space-x-3">
+        <Button label="Settings" @click="visible = true" />
+        <Button
+          label="Logout"
+          severity="danger"
+          @click="signOut(AUTH_STORE.Auth as AuthEntity)"
+        />
+      </div>
 
       <Dialog
         v-model:visible="visible"
@@ -160,6 +167,12 @@ import TabPanel from "primevue/tabpanel";
 import InputText from "primevue/inputtext";
 import { onMounted, reactive, ref, watch } from "vue";
 import { useMaster } from "@/stores/MasterStore";
+import { useAuth } from "@/features/Login/ui/composables/AuthComposables";
+import { AuthStore } from "@/features/Login/ui/store/AuthStore";
+import type { AuthEntity } from "@/features/Login/domain/entity/AuthEntity";
+import router from "@/router";
+const AUTH_STORE = AuthStore();
+const { logout } = useAuth();
 const visible = ref(false);
 // const modelANT = reactive({
 //   ant1: 0,
@@ -181,12 +194,25 @@ const modelNetConfig = reactive({
 const store = useMaster();
 defineEmits(["toggleSidebar"]);
 onMounted(() => {
-  modelNetConfig.IP = store.IP;
-  modelNetConfig.PORT = store.PORT;
+  let ip = localStorage.getItem("IP");
+  let port = localStorage.getItem("PORT");
+
+  if (ip) modelNetConfig.IP = ip;
+  else modelNetConfig.IP = store.IP;
+  if (port) modelNetConfig.PORT = port;
+  else modelNetConfig.IP = store.PORT;
+
   let rangeValue = localStorage.getItem("rangeSetting");
   range.value = rangeValue;
   if (rangeValue) store.RANGE_READER = rangeValue;
 });
+
+const signOut = async (auth: AuthEntity) => {
+  logout(auth);
+  AUTH_STORE.Auth = null;
+  router.push("/login");
+};
+
 watch(
   () => [store.IP, store.PORT],
   () => {

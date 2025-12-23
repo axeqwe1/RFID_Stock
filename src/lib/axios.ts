@@ -15,6 +15,11 @@ function createAxiosInstance(baseURL: string): AxiosInstance {
       } else {
         config.headers["Content-Type"] = "application/json";
       }
+
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
       return config;
     },
     (error) => Promise.reject(error)
@@ -36,18 +41,11 @@ function createAxiosInstance(baseURL: string): AxiosInstance {
         return Promise.reject(error);
       }
 
-      if (
-        isUnauthorized &&
-        !originalRequest._retry &&
-        !isRefreshCall &&
-        !isLoginCall &&
-        hasAuthenCookie
-      ) {
+      if (isUnauthorized && !originalRequest._retry && !isLoginCall) {
         originalRequest._retry = true;
         try {
           // call refresh (ใช้ instance เดิม)
-          await instance.post("/api/Auth/refresh");
-          return instance(originalRequest);
+          // return instance(originalRequest);
         } catch (refreshError) {
           console.error("Refresh token failed:", refreshError);
           if (window.location.pathname !== "/login") {

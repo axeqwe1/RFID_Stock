@@ -137,7 +137,9 @@ const RECEIVE_STORE = receiveStockStore();
 const maxScaned = ref<number>(props.receiveQty);
 const handleStart = async () => {
   isScan.value = !isScan.value;
-  isScan.value ? await startRfid() : await stopRfid();
+  isScan.value
+    ? await startRfid(store.IP, store.PORT)
+    : await stopRfid(store.IP, store.PORT);
 };
 
 const handleAddRfid = () => {
@@ -177,10 +179,11 @@ onMounted(async () => {
           const inList = RECEIVE_STORE.listDataRFIDPO.find(
             (item) => item.rfid === newItem.rfid
           );
-          if (inList) {
+          if (inList != null) {
             newItem.status = true;
             newItem.sku = inList.SKU;
           }
+          console.log(RECEIVE_STORE.listDataRFIDPO);
           console.log(newItem);
           listData.value.push(newItem);
         }
@@ -203,13 +206,20 @@ onMounted(async () => {
 });
 
 onUnmounted(async () => {
-  await stopRfid();
+  await stopRfid(store.IP, store.PORT);
 });
 
 watch(
   () => props.receiveQty,
   (newVal) => {
     maxScaned.value = newVal;
+  }
+);
+
+watch(
+  () => RECEIVE_STORE.listDataRFIDPO,
+  (newVal) => {
+    listData.value = [];
   }
 );
 </script>

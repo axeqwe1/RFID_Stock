@@ -53,7 +53,7 @@
       <template #body="$slotProps">
         <span
           class="p-3 rounded-2xl bg-red-400 text-red-900 font-semibold text-md"
-          v-if="$slotProps.data.Status"
+          v-if="!$slotProps.data.Status"
         >
           <i class="pi pi-times" style="font-size: 1rem"></i>
         </span>
@@ -123,7 +123,9 @@ const store = useMaster();
 const { GetWarehouseRfids } = useFPSWarehouseCompos();
 const handleStart = async () => {
   isScan.value = !isScan.value;
-  isScan.value ? await startRfid() : await stopRfid();
+  isScan.value
+    ? await startRfid(store.IP, store.PORT)
+    : await stopRfid(store.IP, store.PORT);
 };
 
 // RFID Reader
@@ -152,7 +154,7 @@ onMounted(async () => {
           status: message.isOut,
           sku: message.sku,
         };
-
+        console.log(message);
         let detail = rfidInWarehouse.value.find((t) => t.rfid == newItem.rfid);
         // console.log(detail);
         if (detail) {
@@ -197,6 +199,7 @@ onMounted(async () => {
 onMounted(async () => {
   const res = await GetWarehouseRfids();
   rfidInWarehouse.value = res;
+  RECEIVE_STORE.listDataRFIDPO = [];
   console.log(res);
 });
 
@@ -211,7 +214,7 @@ watch(
 );
 
 onUnmounted(async () => {
-  await stopRfid();
+  await stopRfid(store.IP, store.PORT);
   RECEIVE_STORE.listDataRFIDPO = [];
 });
 </script>

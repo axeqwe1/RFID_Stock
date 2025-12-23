@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiService } from "../axios";
+import { apiService } from "../service";
 // import type { LoginRequest } from "@/data/dto/request/auth";
 
 // export const login = async (data: LoginRequest) => {
@@ -23,7 +23,7 @@ export const logout = async () => {
 };
 export const refresh = async () => {
   try {
-    const res = await apiService.post("/api/Auth/refresh", {});
+    const res = await apiService.post("api/Auth/refresh", {});
     console.log(res);
     return res;
   } catch (err) {
@@ -34,7 +34,7 @@ export const refresh = async () => {
 
 export const me = async () => {
   try {
-    const res = await apiService.get("/api/Auth/me");
+    const res = await apiService.get("api/Auth/me");
     console.log(res);
     return res;
   } catch (err: any) {

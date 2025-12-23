@@ -10,8 +10,8 @@
       :rowsPerPageOptions="[10, 20, 50]"
       showGridlines
       tableStyle="min-width: 50rem"
-      dataKey="rfId"
-      :scrollHeight="'400px'"
+      :dataKey="(row) => `${row.rfId}_${row.receiveNo}`"
+      :scrollHeight="'500px'"
       scrollable
       :globalFilterFields="productTransactionColumns.map((c) => c.field)"
       removableSort

@@ -141,7 +141,7 @@
         <Button
           :disabled="
             RECEIVE_STORE.listDataRFIDPO.length < 1 ||
-            RECEIVE_STORE.listDataRFIDPO.filter((t) => t.Status == true)
+            RECEIVE_STORE.listDataRFIDPO.filter((t) => t.Status == false)
               .length > 0
           "
           type="submit"
@@ -360,8 +360,6 @@ const autorunReceiveNo = async () => {
   });
 };
 const resetForm = async () => {
-  await nextTick();
-
   // reset form ทั้งหมด
   formRef.value.reset();
 
@@ -372,6 +370,7 @@ const resetForm = async () => {
 
   // reset RFID list
   RECEIVE_STORE.listDataRFIDPO = [];
+  await nextTick();
 };
 const onDelete = () => {
   confirm.require({
