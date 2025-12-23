@@ -121,7 +121,7 @@
 import { useSignalR } from "@/composable/useSignalR";
 import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/receiveStockStore";
 import type { RFIDType } from "@/features/ReceiveStockAndRegister/types/rfidtype";
-import { startRfid, stopRfid } from "@/lib/api/RFID";
+import { CheckEPC, startRfid, stopRfid } from "@/lib/api/RFID";
 import { useMaster } from "@/stores/MasterStore";
 import type { bodyCell } from "@primeuix/themes/aura/datatable";
 import { onMounted, onUnmounted, ref, watch } from "vue";
@@ -151,7 +151,7 @@ onMounted(async () => {
     signalR.onEvent("ReceiveRFIDUpdate", (message: any) => {
       console.log(message);
     });
-    signalR.onEvent("ReceiveRFIDData", (message: any) => {
+    signalR.onEvent("ReceiveRFIDData", async (message: any) => {
       console.log(message);
       let rangeValue = 0;
       if (store.RANGE_READER === "Close") {
@@ -166,16 +166,17 @@ onMounted(async () => {
         rangeValue = -999;
       }
       if (message.rssi > rangeValue) {
-        let newItem: RFIDType = {
-          rfid: message.epc,
-          status: message.isFound,
-          sku: message.sku,
-        };
-
         const existData = listData.value.find(
-          (item) => item.rfid === newItem.rfid
+          (item) => item.rfid === message.epc
         );
         if (!existData && listData.value.length < maxScaned.value) {
+          const EPCDDetail = await CheckEPC(message.epc);
+          // console.log(EPCDDetail);
+          let newItem: RFIDType = {
+            rfid: message.epc,
+            status: EPCDDetail.isFound,
+            sku: EPCDDetail.sku,
+          };
           const inList = RECEIVE_STORE.listDataRFIDPO.find(
             (item) => item.rfid === newItem.rfid
           );

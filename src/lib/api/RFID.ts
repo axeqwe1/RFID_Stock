@@ -34,3 +34,13 @@ export const stopRfid = async (ip: string, port: string) => {
     throw err;
   }
 };
+
+export const CheckEPC = async (EPC: string) => {
+  try {
+    const res = await rfidService.get("/rfidApi/RFID/CheckEPC/" + EPC);
+    return res.data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};

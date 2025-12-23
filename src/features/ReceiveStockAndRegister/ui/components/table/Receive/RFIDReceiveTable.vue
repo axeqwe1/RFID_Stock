@@ -104,7 +104,7 @@ import type {
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import RFIDModal from "../../modal/RFIDModal.vue";
 import RFIDDetailForm from "../../../form/RFIDDetailForm.vue";
-import { startRfid, stopRfid } from "@/lib/api/RFID";
+import { CheckEPC, startRfid, stopRfid } from "@/lib/api/RFID";
 import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/receiveStockStore";
 import { useMaster } from "@/stores/MasterStore";
 import { useSignalR } from "@/composable/useSignalR";
@@ -135,7 +135,7 @@ onMounted(async () => {
     signalR.onEvent("ReceiveRFIDUpdate", (message: any) => {
       console.log(message);
     });
-    signalR.onEvent("ReceiveRFIDData", (message: any) => {
+    signalR.onEvent("ReceiveRFIDData", async (message: any) => {
       let rangeValue = 0;
       if (store.RANGE_READER === "Close") {
         rangeValue = -33;
@@ -149,19 +149,21 @@ onMounted(async () => {
         rangeValue = -999;
       }
       if (message.rssi > rangeValue) {
-        let newItem: RFIDType = {
-          rfid: message.epc,
-          status: message.isOut,
-          sku: message.sku,
-        };
-        console.log(message);
-        let detail = rfidInWarehouse.value.find((t) => t.rfid == newItem.rfid);
+        let detail = rfidInWarehouse.value.find((t) => t.rfid == message.epc);
         // console.log(detail);
         if (detail) {
-          var existData = listData.value.filter((t) => t.rfid == newItem.rfid);
+          var existData = listData.value.filter((t) => t.rfid == message.epc);
           if (existData.length > 0) {
             return;
           }
+          const EPCDDetail = await CheckEPC(message.epc);
+          console.log(EPCDDetail);
+          let newItem: RFIDType = {
+            rfid: message.epc,
+            status: EPCDDetail.isOut,
+            sku: EPCDDetail.sku,
+          };
+          console.log(message);
           let newBody: RFIDPOBody = {
             rfid: newItem.rfid,
             POno: detail?.poNo,
