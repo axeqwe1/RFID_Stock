@@ -99,7 +99,7 @@ const emits = defineEmits<{
 
 const AddRFIDData = (value: RFIDPOBody[]) => {
   if (value) {
-    visible.value = false;
+    // visible.value = false;
     const existData = listData.value.filter((newItem) =>
       value.some((existingItem) => existingItem.rfid === newItem.rfid)
     );

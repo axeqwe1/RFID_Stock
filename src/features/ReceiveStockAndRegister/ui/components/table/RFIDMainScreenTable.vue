@@ -50,6 +50,7 @@
           <InputText
             v-model="filterModel.value"
             type="text"
+            size="small"
             @input="filterCallback()"
             placeholder="Search by RFID"
           />
@@ -62,11 +63,35 @@
           <InputText
             v-model="filterModel.value"
             type="text"
+            size="small"
             @input="filterCallback()"
             placeholder="Search by ProductBarcode"
           />
         </template>
-
+        <template
+          v-if="col.field == 'sku'"
+          #filter="{ filterCallback, filterModel }"
+        >
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            size="small"
+            @input="filterCallback()"
+            placeholder="Search by SKU"
+          />
+        </template>
+        <template
+          v-if="col.field == 'poNo'"
+          #filter="{ filterCallback, filterModel }"
+        >
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            size="small"
+            @input="filterCallback()"
+            placeholder="Search by PONo"
+          />
+        </template>
         <template
           v-if="col.field == 'receiveDate'"
           #filter="{ filterCallback, filterModel }"
@@ -76,6 +101,7 @@
             dateFormat="mm/dd/yy"
             placeholder="mm/dd/yyyy"
             selectionMode="range"
+            size="small"
             @update:modelValue="
               filterDateBetween(filterModel.value, filterCallback)
             "
@@ -93,6 +119,70 @@
           {{ formatDate(slotProps.data.inputDate) }}
         </template>
 
+        <template
+          v-if="col.field == 'colorCode'"
+          #filter="{ filterModel, filterCallback }"
+        >
+          <MultiSelect
+            v-model="filterModel.value"
+            @change="filterCallback()"
+            filter
+            size="small"
+            :options="[...new Set(products?.map((item) => item.colorCode))]"
+            placeholder="Color"
+            style="min-width: 4rem"
+            :maxSelectedLabels="1"
+          >
+            <template #option="slotProps">
+              <div class="flex items-center gap-2">
+                <span>{{ slotProps.option }}</span>
+              </div>
+            </template>
+          </MultiSelect>
+        </template>
+        <template
+          v-if="col.field == 'size'"
+          #filter="{ filterModel, filterCallback }"
+        >
+          <MultiSelect
+            v-model="filterModel.value"
+            @change="filterCallback()"
+            filter
+            size="small"
+            :options="[...new Set(products?.map((item) => item.size))]"
+            placeholder="Size"
+            style="min-width: 4rem"
+            :maxSelectedLabels="1"
+          >
+            <template #option="slotProps">
+              <div class="flex items-center gap-2">
+                <span>{{ slotProps.option }}</span>
+              </div>
+            </template>
+          </MultiSelect>
+        </template>
+        <template
+          v-if="col.field == 'inType'"
+          #filter="{ filterModel, filterCallback }"
+        >
+          <Select
+            v-model="filterModel.value"
+            @change="filterCallback()"
+            filter
+            showClear
+            size="small"
+            :options="[...new Set(products?.map((item) => item.inType))]"
+            placeholder="InType"
+            style="min-width: 4rem"
+            :maxSelectedLabels="1"
+          >
+            <template #option="slotProps">
+              <div class="flex items-center gap-2">
+                <span>{{ slotProps.option }}</span>
+              </div>
+            </template>
+          </Select>
+        </template>
         <template #filterclear="{ filterCallback }">
           <Button
             type="button"
@@ -162,9 +252,9 @@ const filters = ref({
   rfId: { value: null, matchMode: FilterMatchMode.CONTAINS },
   productBarcode: { value: null, matchMode: FilterMatchMode.CONTAINS },
   sku: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  itemCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  colorCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  size: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  itemCode: { value: null, matchMode: FilterMatchMode.IN },
+  colorCode: { value: null, matchMode: FilterMatchMode.IN },
+  size: { value: null, matchMode: FilterMatchMode.IN },
   receiveNo: { value: null, matchMode: FilterMatchMode.CONTAINS },
 
   receiveDate: {
@@ -187,7 +277,7 @@ const filters = ref({
 const productTransactionColumns = ref([
   { field: "warehouse", header: "Warehouse", filter: true },
   { field: "rfId", header: "RFID", filter: true },
-  { field: "productBarcode", header: "Barcode", filter: true },
+  // { field: "productBarcode", header: "Barcode", filter: true },
   { field: "sku", header: "SKU", filter: true },
   { field: "itemCode", header: "ItemCode", filter: true },
   { field: "colorCode", header: "Color", filter: true },

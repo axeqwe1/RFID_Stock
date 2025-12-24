@@ -21,4 +21,5 @@ export interface WarehouseRFIdItem {
   size: string;
   uom: string;
   sku: string;
+  status?: boolean;
 }

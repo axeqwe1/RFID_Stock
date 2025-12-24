@@ -125,6 +125,8 @@ const AddRfid = async (value: RFIDType[]) => {
     POItemNo: selectData.value.poItemNo,
   }));
   emit("AddRFIDData", RFIDPOBody);
+  receiveQty.value = 0;
+  selectData.value = null;
 };
 
 onMounted(async () => {

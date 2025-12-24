@@ -19,6 +19,11 @@
             class="w-40"
             severity="info"
             label="Clear"
+            @click="
+              () => {
+                listData = [];
+              }
+            "
           ></Button>
           <Button
             :disabled="RECEIVE_STORE.editReceiveId != null"
@@ -212,6 +217,7 @@ watch(
   () => RECEIVE_STORE.listDataRFIDPO,
   (newVal) => {
     listData.value = newVal;
+    console.log(newVal);
   }
 );
 

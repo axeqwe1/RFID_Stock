@@ -6,7 +6,7 @@
     :style="{ width: '90vw', height: '90vh' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     @hide="close"
-    :draggable="false"
+    :draggable="true"
   >
     <slot />
   </Dialog>

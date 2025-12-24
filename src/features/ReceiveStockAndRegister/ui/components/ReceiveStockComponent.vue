@@ -178,6 +178,7 @@ import type {
   WarehouseRFIdItem,
 } from "../../dto/CreateWarehouseReceiveDTO";
 import type { RFIDPOBody } from "../../types/rfidtype";
+import { AuthStore } from "@/features/Login/ui/store/AuthStore";
 
 const router = useRouter();
 const toast = useToast();
@@ -195,7 +196,7 @@ const {
 const MASTER_STORE = useMaster();
 const RECEIVE_STORE = receiveStockStore();
 const formRef = ref<any>();
-
+const AUTH_STORE = AuthStore();
 const initialValues = ref({
   startReceiveDate: "",
   endReceiveDate: "",
@@ -278,8 +279,8 @@ const onFormSubmit = ({ valid, values }: any) => {
       invoiceDate: values.invoiceDate ?? null,
       warehouse: values.warehouse ?? null,
       remark: values.remark ?? null,
-      companyCode: "FPSTH",
-      createdBy: "admin",
+      companyCode: AUTH_STORE.Auth?.GetUserData().companyCode ?? "",
+      createdBy: AUTH_STORE.Auth?.GetUserData().fullName ?? "admin",
       rfidlist: RECEIVE_STORE.listDataRFIDPO.map((item) => {
         return {
           rfid: item.rfid ?? null,
@@ -440,6 +441,7 @@ watch(
             Color: item.colorCode,
             Size: item.size,
             SKU: item.sku,
+            // Status: item.status,
             Unit: item.uom,
             POItemNo: item.poNoItem,
           } as RFIDPOBody;

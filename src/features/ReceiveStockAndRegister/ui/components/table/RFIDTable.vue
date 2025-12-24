@@ -33,6 +33,11 @@
         class="w-full flex-row justify-between items-center flex border-b-2 pb-3"
       >
         <div class="flex flex-col space-x-2">
+          <label
+            v-if="RECEIVE_STORE.listDataRFIDPO.length > 0"
+            class="text-sm text-green-500 font-semibold"
+            >added : {{ RECEIVE_STORE.listDataRFIDPO.length }}</label
+          >
           <label class="text-lg font-bold">RFID List</label>
           <label class="text-sm text-gray-400 font-semibold"
             >Total : {{ listData.length }} / {{ maxScaned ?? 0 }}</label
@@ -144,6 +149,7 @@ const handleStart = async () => {
 
 const handleAddRfid = () => {
   emit("addrfid", listData.value);
+  listData.value = [];
 };
 onMounted(async () => {
   await signalR.startConnection();
@@ -184,8 +190,8 @@ onMounted(async () => {
             newItem.status = true;
             newItem.sku = inList.SKU;
           }
-          console.log(RECEIVE_STORE.listDataRFIDPO);
-          console.log(newItem);
+
+          console.log(maxScaned.value + " " + listData.value.length);
           listData.value.push(newItem);
         }
 

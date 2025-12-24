@@ -274,6 +274,7 @@ import type {
 import { useMaster } from "@/stores/MasterStore";
 import type { RFIDPOBody } from "../../types/rfidtype";
 import { formatDate } from "@/utils/format";
+import { AuthStore } from "@/features/Login/ui/store/AuthStore";
 const router = useRouter();
 const toast = useToast();
 const confirm = useConfirm();
@@ -286,6 +287,7 @@ const {
   DeleteWarehouseReceive,
 } = useFPSWarehouseCompos();
 const formRef = ref<any>();
+const AUTH_STORE = AuthStore();
 const initialValues = ref({
   receiveType: "Purchase",
 });
@@ -423,8 +425,8 @@ const onFormSubmit = ({ valid, values }: any) => {
       invoiceDate: values.invoiceDate,
       warehouse: values.warehouse,
       remark: values.remark,
-      companyCode: "FPSTH",
-      createdBy: "admin",
+      companyCode: AUTH_STORE.Auth?.GetUserData().companyCode ?? "",
+      createdBy: AUTH_STORE.Auth?.GetUserData().fullName ?? "admin",
       rfidlist: RECEIVE_STORE.listDataRFIDPO.map((item) => {
         return {
           rfid: item.rfid,
@@ -460,6 +462,7 @@ const onFormSubmit = ({ valid, values }: any) => {
                 life: 3000,
               });
               resetForm();
+
               router.push("/receivetostockandregister");
             })
             .catch((error) => {
@@ -567,6 +570,9 @@ watch(
 );
 
 onUnmounted(() => {
+  if (RECEIVE_STORE.editReceiveId != null) {
+    RECEIVE_STORE.listDataRFIDPO = [];
+  }
   RECEIVE_STORE.editReceiveId = null;
 });
 </script>
