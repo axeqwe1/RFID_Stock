@@ -149,6 +149,8 @@ const handleStart = async () => {
 
 const handleAddRfid = () => {
   emit("addrfid", listData.value);
+  stopRfid(store.IP, store.PORT);
+  isScan.value = false;
   listData.value = [];
 };
 onMounted(async () => {
@@ -158,24 +160,22 @@ onMounted(async () => {
       console.log(message);
     });
     signalR.onEvent("ReceiveRFIDData", async (message: any) => {
-      console.log(message);
-      let rangeValue = 0;
+      let rangeValue = -999;
       if (store.RANGE_READER === "Close") {
-        rangeValue = -33;
+        rangeValue = -30;
       }
       if (store.RANGE_READER === "Medium") {
         rangeValue = -55;
       }
       if (store.RANGE_READER === "High") {
         rangeValue = -85;
-      } else {
-        rangeValue = -999;
       }
+      // console.log(rangeValue);
       if (message.rssi > rangeValue) {
         const existData = listData.value.find(
           (item) => item.rfid === message.epc
         );
-        if (!existData && listData.value.length < maxScaned.value) {
+        if (!existData) {
           const EPCDDetail = await CheckEPC(message.epc);
           // console.log(EPCDDetail);
           let newItem: RFIDType = {

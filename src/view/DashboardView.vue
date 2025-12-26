@@ -62,7 +62,9 @@ let tempDetail: ProductDetail[] = [];
 const store = useMaster();
 const IPConf = `${store.IP}:${store.PORT}`;
 async function onScan(isScan: boolean) {
-  isScan ? await startRfid() : await stopRfid();
+  isScan
+    ? await startRfid(store.IP, store.PORT)
+    : await stopRfid(store.IP, store.PORT);
   if (!isConnected.value) {
     toast.add({
       severity: "error",
@@ -82,7 +84,7 @@ function onClear(clear: boolean) {
 }
 
 onMounted(async () => {
-  await stopRfid();
+  await stopRfid(store.IP, store.PORT);
   isLoading.value = true;
   const fetchData = async () => {
     const res = await GetProductData();
@@ -107,7 +109,7 @@ onMounted(async () => {
       console.log(message);
       if (message == "NotConnect") {
         isConnected.value = false;
-        stopRfid();
+        stopRfid(store.IP, store.PORT);
         NotConnectCount.value++;
       } else {
         toast.add({
@@ -124,7 +126,7 @@ onMounted(async () => {
       // console.log(message);
       console.log(tempDetail);
       const rfidData = ProductRfidData.value.find(
-        (item) => item.rfid == message
+        (item) => item.rfid == message.epc
       );
       if (rfidData) {
         const productData = Productdata.value.find((item) => {
@@ -169,7 +171,7 @@ onMounted(async () => {
       }
       console.log(ProductDetailList.value);
       isConnected.value = true;
-      listData.value.push(message);
+      listData.value.push(message.epc);
       listData.value = [...new Set(listData.value)];
       TOTAL_QUANTITY.value = ProductDetailList.value.reduce(
         (ac, cur) => ac + cur.qty,
@@ -222,7 +224,7 @@ onUnmounted(() => {
     connection.value.off("ReceiveRFIDUpdate");
     connection.value.off("ReceiveRFIDData");
     connection.value.stop();
-    stopRfid();
+    stopRfid(store.IP, store.PORT);
   }
 });
 </script>

@@ -8,7 +8,7 @@ export const useAuth = () => {
   const service = new AuthService(repo);
   const login = async (req: LoginRequest) => {
     // Login
-    const res = await await service.Login(req);
+    const res = await service.Login(req);
     res.SaveToken();
     return res;
   };

@@ -192,7 +192,9 @@ const submitForm = async () => {
 const onScan = async (isScaned: boolean) => {
   console.log(isScaned);
 
-  isScaned ? await startRfid() : await stopRfid();
+  isScaned
+    ? await startRfid(store.IP, store.PORT)
+    : await stopRfid(store.IP, store.PORT);
   // if (!isConnected.value) {
   //   // await stopRfid();
   //   toast.add({
@@ -215,7 +217,7 @@ const onClear = (clear: boolean) => {
     initialValues.size = "";
     initialValues.targetQty = 0;
     isScan.value = clear;
-    stopRfid();
+    stopRfid(store.IP, store.PORT);
   }
 };
 onMounted(async () => {
@@ -230,7 +232,7 @@ onMounted(async () => {
       console.log(message);
       if (message == "NotConnect") {
         isConnected.value = false;
-        stopRfid();
+        stopRfid(store.IP, store.PORT);
         NotConnectCount.value++;
       } else {
         toast.add({
@@ -291,7 +293,7 @@ watch(requestData, (newVal) => {
 });
 
 onMounted(async () => {
-  await stopRfid();
+  await stopRfid(store.IP, store.PORT);
   const fetchData = async () => {
     const res = await GetProductData();
     Productdata.value = res.data;
@@ -300,13 +302,14 @@ onMounted(async () => {
   skuList.value = Productdata.value.map((item) => item.sku);
   console.log(Productdata.value);
 });
+
 onUnmounted(() => {
   // หยุด connection เมื่อ component ถูก unmount
   if (connection.value) {
     connection.value.off("ReceiveRFIDUpdate");
     connection.value.off("ReceiveRFIDData");
     connection.value.stop();
-    stopRfid();
+    stopRfid(store.IP, store.PORT);
   }
 });
 </script>

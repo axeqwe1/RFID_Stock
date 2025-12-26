@@ -249,7 +249,11 @@
 
   <div class="card mt-4 shadow-xl">
     <RFIDPOTable />
+    <div v-if="RECEIVE_STORE.listDataRFIDPO.length > 0" class="p-5">
+      <SummaryTable :sumData="sumData" :mapColorSize="sumQty" />
+    </div>
   </div>
+
   <ConfirmDialog></ConfirmDialog>
 </template>
 
@@ -275,6 +279,8 @@ import { useMaster } from "@/stores/MasterStore";
 import type { RFIDPOBody } from "../../types/rfidtype";
 import { formatDate } from "@/utils/format";
 import { AuthStore } from "@/features/Login/ui/store/AuthStore";
+import type { summaryDataDTO } from "../../dto/SummaryDataDTO";
+import SummaryTable from "./table/SummaryTable.vue";
 const router = useRouter();
 const toast = useToast();
 const confirm = useConfirm();
@@ -292,6 +298,8 @@ const initialValues = ref({
   receiveType: "Purchase",
 });
 const optionsWarehouse = ref<string[]>([]);
+const sumData = ref<summaryDataDTO[]>([]);
+const sumQty = ref<Map<string, number>>();
 const RECEIVE_STORE = receiveStockStore();
 const MASTER_STORE = useMaster();
 const resolver = ({ values }: any) => {
@@ -529,6 +537,49 @@ onMounted(async () => {
 
   console.log(optionsWarehouse.value);
 });
+
+watch(
+  () => RECEIVE_STORE.listDataRFIDPO,
+  (newVal) => {
+    if (newVal.length === 0) {
+      sumData.value = [];
+      sumQty.value = new Map<string, number>();
+      return;
+    }
+    let mapColorSize = new Map<string, number>();
+    let da = RECEIVE_STORE.listDataRFIDPO.map((item) => {
+      return {
+        ProductCode: item.ProductCode,
+        Color: item.Color,
+        Size: item.Size,
+      };
+    });
+    da.forEach((item) => {
+      const key = `${item.ProductCode}_${item.Color}_${item.Size}`;
+      let existData = mapColorSize.get(key);
+      if (existData != null) {
+        mapColorSize.set(key, existData + 1);
+      } else {
+        mapColorSize.set(key, 1);
+      }
+    });
+
+    const seen = new Set<string>();
+
+    sumData.value = da.filter((item) => {
+      const key = `${item.ProductCode}_${item.Color}_${item.Size}`;
+
+      if (seen.has(key)) {
+        return false; // ซ้ำ → ตัดทิ้ง
+      }
+
+      seen.add(key);
+      return true; // ไม่ซ้ำ → เก็บ
+    });
+    sumQty.value = mapColorSize;
+  },
+  { deep: true }
+);
 
 watch(
   () => RECEIVE_STORE.editReceiveId,

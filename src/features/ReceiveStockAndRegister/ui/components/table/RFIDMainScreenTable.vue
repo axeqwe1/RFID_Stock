@@ -96,18 +96,29 @@
           v-if="col.field == 'receiveDate'"
           #filter="{ filterCallback, filterModel }"
         >
-          <DatePicker
-            v-model="filterModel.value"
-            dateFormat="mm/dd/yy"
-            placeholder="mm/dd/yyyy"
-            selectionMode="range"
-            size="small"
-            @update:modelValue="
-              filterDateBetween(filterModel.value, filterCallback)
-            "
-            fluid
-            class="w-50"
-          />
+          <div class="flex flex-row justify-center gap-3">
+            <DatePicker
+              v-model="selectDate"
+              dateFormat="mm/dd/yy"
+              placeholder="mm/dd/yyyy"
+              selectionMode="range"
+              size="small"
+              showButtonBar
+              @update:modelValue="filterDateBetween(filterModel.value)"
+              fluid
+              class="w-50"
+            >
+              <template #clearbutton="{ actionCallback }">
+                <Button
+                  size="small"
+                  icon="pi pi-times"
+                  severity="danger"
+                  variant="outlined"
+                  @click="clearDatePicker()"
+                />
+              </template>
+            </DatePicker>
+          </div>
         </template>
         <template v-if="col.field == 'receiveDate'" #body="slotProps">
           {{ formatDate(slotProps.data.receiveDate) }}
@@ -216,6 +227,11 @@
           </span>
         </template>
       </Column>
+
+      <template #footer
+        >In total there are
+        {{ products ? products.length.toString() : "0" }}</template
+      >
     </DataTable>
   </div>
 </template>
@@ -329,19 +345,37 @@ const productTransactionColumns = ref([
 ]);
 
 const data = ref<ProductTransactionResult[]>([]);
-async function filterDateBetween(value: any, callback: any) {
-  if (value[1] == null) {
+const selectDate = ref<[Date | null, Date | null] | null>(null);
+function filterDateBetween(value: [Date | null, Date | null] | null) {
+  console.log(value);
+  if (
+    selectDate.value == null ||
+    selectDate.value[0] == null ||
+    selectDate.value[1] == null
+  )
+    return;
+  if (!selectDate.value || !selectDate.value[0] || !selectDate.value[1]) {
+    products.value = data.value;
     return;
   }
+
+  const [start, end] = selectDate.value;
+
+  const from = new Date(start);
+  const to = new Date(end);
+  from.setHours(0, 0, 0, 0);
+  to.setHours(23, 59, 59, 999);
+
   products.value = data.value.filter((item) => {
-    if (item.receiveDate) {
-      const itemDate = new Date(item.receiveDate);
-      value[0].setHours(0, 0, 0, 0);
-      value[1].setHours(23, 59, 59, 999);
-      return itemDate >= value[0] && itemDate <= value[1];
-    }
+    if (!item.receiveDate) return false;
+    const itemDate = new Date(item.receiveDate);
+    return itemDate >= from && itemDate <= to;
   });
 }
+const clearDatePicker = () => {
+  selectDate.value = null; // สำคัญมาก
+  products.value = data.value; // reset table
+};
 const edit = (receiveNo: string) => {
   RECEIVE_STORE.editReceiveId = receiveNo;
 };

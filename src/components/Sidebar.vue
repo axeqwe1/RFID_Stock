@@ -265,8 +265,8 @@ const items = ref([
         ],
       },
       {
-        label: "Receive to Stock and Register RFID",
-        icon: "pi pi-plus",
+        label: "Stock Management",
+        icon: "pi pi-box",
         active: false,
         items: [
           {

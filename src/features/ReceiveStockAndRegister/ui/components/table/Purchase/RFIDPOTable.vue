@@ -1,5 +1,6 @@
 <template>
   <DataTable
+    v-model:filters="filter"
     :value="listData"
     paginator
     :rows="5"
@@ -87,12 +88,17 @@ import { onMounted, ref, watch } from "vue";
 import RFIDModal from "../../modal/RFIDModal.vue";
 import RFIDDetailForm from "../../../form/RFIDDetailForm.vue";
 import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/receiveStockStore";
+import { FilterMatchMode, FilterOperator } from "@primevue/core/api";
 
 const listData = ref<RFIDPOBody[]>([]);
 const Total = ref<number>(10);
 const RECEIVE_STORE = receiveStockStore();
 const props = defineProps<{}>();
 const visible = ref<boolean>(false);
+const filter = ref({
+  Color: { value: null, matchMode: FilterMatchMode.IN },
+  Size: { value: null, matchMode: FilterMatchMode.IN },
+});
 const emits = defineEmits<{
   (e: "addData", value: RFIDPOBody[]): void;
 }>();

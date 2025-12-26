@@ -50,6 +50,7 @@
             :field="col.field"
             :header="col.header"
             :filter="col.filter"
+            :show-filter-match-modes="false"
           >
             <template
               v-if="col.field == 'itemCode'"
@@ -73,6 +74,32 @@
                 type="text"
                 @input="filterCallback"
                 placeholder="Search By SKU"
+              />
+            </template>
+            <template
+              v-if="col.field == 'colorCode'"
+              #filter="{ filterCallback, filterModel }"
+            >
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="[...new Set(listData.map((item) => item.colorCode))]"
+                size="small"
+                type="text"
+                @change="filterCallback"
+                placeholder="Search By Color"
+              />
+            </template>
+            <template
+              v-if="col.field == 'size'"
+              #filter="{ filterCallback, filterModel }"
+            >
+              <MultiSelect
+                v-model="filterModel.value"
+                :options="[...new Set(listData.map((item) => item.size))]"
+                size="small"
+                type="text"
+                @change="filterCallback"
+                placeholder="Search By Size"
               />
             </template>
           </Column>
@@ -107,7 +134,8 @@ const listData = ref<POProductDetailDTO[]>([]);
 const PoOptions = ref<PODescType[]>([]);
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-
+  colorCode: { value: null, matchMode: FilterMatchMode.IN },
+  size: { value: null, matchMode: FilterMatchMode.IN },
   itemCode: { value: null, matchMode: FilterMatchMode.CONTAINS },
   sku: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
