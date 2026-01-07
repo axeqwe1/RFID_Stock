@@ -5,6 +5,7 @@ import type { RFIDPOBody } from "../types/rfidtype";
 
 export const receiveStockStore = defineStore("receiveStock", () => {
   const editReceiveId = ref<string | null>(null);
+  const editRequestId = ref<string | null>(null);
   const listDataRFIDPO = ref<RFIDPOBody[]>([]);
-  return { editReceiveId, listDataRFIDPO };
+  return { editReceiveId, editRequestId, listDataRFIDPO };
 });

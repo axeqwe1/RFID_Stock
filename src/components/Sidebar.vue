@@ -274,6 +274,11 @@ const items = ref([
             icon: "pi pi-fw pi-folder",
             route: "/receivetostockandregister",
           },
+          {
+            label: "Outstock",
+            icon: "pi pi-fw pi-folder",
+            route: "/queueoutstock",
+          },
         ],
       },
       {

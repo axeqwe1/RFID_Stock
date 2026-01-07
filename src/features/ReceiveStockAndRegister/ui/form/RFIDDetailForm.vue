@@ -107,7 +107,11 @@
       </div>
 
       <div class="col-span-3 card shadow-xl mt-3">
-        <RFIDTable @addrfid="AddRfid" :receive-qty="receiveQty" />
+        <RFIDTable
+          @addrfid="AddRfid"
+          :receive-qty="receiveQty"
+          :button-name="'Add Rfid'"
+        />
       </div>
     </div>
   </div>

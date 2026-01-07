@@ -63,6 +63,43 @@ const router = createRouter({
           ],
         },
         {
+          path: "/queueoutstock",
+          name: "queueoutstock",
+          component: () => import("@/features/Outstock/ui/view/page.vue"),
+          children: [
+            {
+              path: "",
+              name: "OutMain",
+              component: () =>
+                import(
+                  "../features/Outstock/ui/components/MainscreenComponent.vue"
+                ),
+            },
+            {
+              path: "create",
+              name: "CreateRequestOutComponent",
+              component: () =>
+                import(
+                  "../features/Outstock/ui/components/CreateReqeustComponent.vue"
+                ),
+            },
+            {
+              path: "outstock",
+              name: "OutStockComponent",
+              component: () =>
+                import(
+                  "@/features/Outstock/ui/components/OutstockComponent.vue"
+                ),
+            },
+            {
+              path: "scanoutstock",
+              name: "OutStockComponent",
+              component: () =>
+                import("@/features/Outstock/ui/view/OutstockScanRfid.vue"),
+            },
+          ],
+        },
+        {
           path: "/deleterfid",
           name: "deleterfid",
           component: () => import("../view/RFIDDeleteView.vue"),

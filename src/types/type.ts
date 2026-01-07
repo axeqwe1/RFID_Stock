@@ -82,3 +82,66 @@ export interface WarehouseStock {
 //   color: string;
 //   size: string;
 // }
+
+export interface PODesc {
+  poNo: string;
+  poDate: string; // ISO string
+  prNo: string;
+  companyCode: string;
+  poType: number;
+
+  confirmPO: boolean;
+  approvePO: boolean;
+  approvePO_Date: string; // ISO string
+
+  closeStatus: boolean;
+  closeBy: string;
+  closeDate: string | null;
+
+  cancelStatus: boolean;
+  cancelBy: string;
+  cancelDate: string | null;
+
+  shipMode: string;
+
+  paymentType: string;
+  termDay: number;
+  paymentDetail: string;
+  paymentTerm: string;
+  termDetail: string;
+
+  currency: string;
+  rates: number;
+
+  poDesc: string | null;
+  poRemark: string;
+
+  vendorId: string;
+  dlvCode: string;
+
+  userCreate: string;
+  createDate: string; // ISO string
+  userEdit: string;
+  editDate: string; // ISO string
+
+  needDate: string;
+  etd: string;
+  eta: string;
+  finalETA: string;
+
+  stepType: string;
+  previousStep: number | null;
+  currentStep: number;
+  approveTime: number;
+
+  poNetAmount: number;
+  poAmountBeforeVat: number;
+  poTotalAmount: number;
+}
+
+export interface InoutTypeDTO {
+  inoutType: string;
+  tranType: string;
+  typeName: string;
+  typeAdmin: boolean;
+}

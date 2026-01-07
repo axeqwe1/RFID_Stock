@@ -54,7 +54,7 @@
           <Button
             @click="handleAddRfid"
             severity="success"
-            :label="props.buttonName ? props.buttonName : 'ADD RFID'"
+            label="ADD RFID"
             :disabled="
               listData.length !== maxScaned ||
               listData.filter((item) => item.status).length > 0 ||
@@ -136,7 +136,7 @@ const listData = ref<RFIDType[]>([]);
 const store = useMaster();
 // const props = defineProps<{}>();
 const emit = defineEmits<{ (e: "addrfid", value: RFIDType[]): void }>();
-const props = defineProps<{ receiveQty: number; buttonName: string }>();
+const props = defineProps<{ receiveQty: number }>();
 const isScan = ref<boolean>(false);
 const RECEIVE_STORE = receiveStockStore();
 const maxScaned = ref<number>(props.receiveQty);
