@@ -57,7 +57,7 @@
             label="ADD RFID"
             :disabled="
               listData.length !== maxScaned ||
-              listData.filter((item) => item.status).length > 0 ||
+              listData.filter((item) => !item.status).length > 0 ||
               listData.length === 0
             "
           ></Button>
@@ -85,11 +85,8 @@
       <template #body="$slotProps">
         <span
           class="p-3 rounded-2xl bg-red-400 text-red-900 font-semibold text-md"
-          v-if="$slotProps.data.status"
+          v-if="!$slotProps.data.status"
           ><i class="pi pi-times" style="font-size: 1rem"></i>
-          <span class="ml-2">{{
-            $slotProps.data.sku ? $slotProps.data.sku : ""
-          }}</span>
         </span>
 
         <span
@@ -124,6 +121,8 @@
 
 <script setup lang="ts">
 import { useSignalR } from "@/composable/useSignalR";
+import { CheckEPCOutStock } from "@/features/Outstock/outstock.api";
+import type { ScanOutStockRequest } from "@/features/Outstock/outstock.model";
 import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/receiveStockStore";
 import type { RFIDType } from "@/features/ReceiveStockAndRegister/types/rfidtype";
 import { CheckEPC, startRfid, stopRfid } from "@/lib/api/RFID";
@@ -136,7 +135,10 @@ const listData = ref<RFIDType[]>([]);
 const store = useMaster();
 // const props = defineProps<{}>();
 const emit = defineEmits<{ (e: "addrfid", value: RFIDType[]): void }>();
-const props = defineProps<{ receiveQty: number }>();
+const props = defineProps<{
+  receiveQty: number;
+  request: ScanOutStockRequest | null;
+}>();
 const isScan = ref<boolean>(false);
 const RECEIVE_STORE = receiveStockStore();
 const maxScaned = ref<number>(props.receiveQty);
@@ -175,9 +177,9 @@ onMounted(async () => {
         const existData = listData.value.find(
           (item) => item.rfid === message.epc
         );
-        if (!existData) {
-          const EPCDDetail = await CheckEPC(message.epc);
-          // console.log(EPCDDetail);
+        if (!existData && props.request != null) {
+          const EPCDDetail = await CheckEPCOutStock(message.epc, props.request);
+          console.log(EPCDDetail);
           let newItem: RFIDType = {
             rfid: message.epc,
             status: EPCDDetail.isFound,
@@ -227,6 +229,13 @@ watch(
   () => RECEIVE_STORE.listDataRFIDPO,
   (newVal) => {
     listData.value = [];
+  }
+);
+
+watch(
+  () => props.request,
+  (newVal) => {
+    console.log("Request changed:", newVal);
   }
 );
 </script>

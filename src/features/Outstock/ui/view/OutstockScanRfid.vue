@@ -17,8 +17,16 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Request No -->
           <div class="space-y-1">
-            <label class="font-semibold">Request Out No *</label>
-            <InputText name="requestOutNo" size="small" disabled fluid />
+            <label class="font-semibold"
+              >Request Out No <span class="text-red-500">*</span></label
+            >
+            <InputText
+              v-model="request.requestOutNo"
+              name="requestOutNo"
+              size="small"
+              disabled
+              fluid
+            />
             <Message
               v-if="$form.requestOutNo?.invalid"
               severity="error"
@@ -30,18 +38,29 @@
 
           <!-- Out Type -->
           <div class="space-y-1">
-            <label class="font-semibold">Out Type *</label>
-            <InputText name="outType" size="small" disabled fluid />
+            <label class="font-semibold"
+              >Out Type <span class="text-red-500">*</span></label
+            >
+            <InputText
+              v-model="request.outType"
+              name="outType"
+              size="small"
+              disabled
+              fluid
+            />
           </div>
 
           <!-- Out Date -->
           <div class="space-y-1">
-            <label class="font-semibold">Out Date *</label>
+            <label class="font-semibold"
+              >Out Date <span class="text-red-500">*</span></label
+            >
             <DatePicker
               name="outDate"
               size="small"
               placeholder="Select date"
               fluid
+              v-model="request.outDate"
             />
             <Message
               v-if="$form.outDate?.invalid"
@@ -63,8 +82,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Product Code -->
           <div class="space-y-1">
-            <label class="font-semibold">Product Code *</label>
-            <InputText name="productCode" size="small" fluid />
+            <label class="font-semibold"
+              >Product Code <span class="text-red-500">*</span></label
+            >
+            <InputText
+              v-model="request.productCode"
+              name="productCode"
+              size="small"
+              fluid
+            />
             <Message
               v-if="$form.productCode?.invalid"
               severity="error"
@@ -76,8 +102,15 @@
 
           <!-- Color -->
           <div class="space-y-1">
-            <label class="font-semibold">Color *</label>
-            <InputText name="color" size="small" fluid />
+            <label class="font-semibold"
+              >Color <span class="text-red-500">*</span></label
+            >
+            <InputText
+              v-model="request.color"
+              name="color"
+              size="small"
+              fluid
+            />
             <Message v-if="$form.color?.invalid" severity="error" size="small">
               {{ $form.color.error?.message }}
             </Message>
@@ -85,8 +118,10 @@
 
           <!-- Size -->
           <div class="space-y-1">
-            <label class="font-semibold">Size *</label>
-            <InputText name="size" size="small" fluid />
+            <label class="font-semibold"
+              >Size <span class="text-red-500">*</span></label
+            >
+            <InputText v-model="request.size" name="size" size="small" fluid />
             <Message v-if="$form.size?.invalid" severity="error" size="small">
               {{ $form.size.error?.message }}
             </Message>
@@ -94,8 +129,16 @@
 
           <!-- Out Qty -->
           <div class="space-y-1">
-            <label class="font-semibold">Out Qty *</label>
-            <InputNumber name="outQty" size="small" :min="1" fluid />
+            <label class="font-semibold"
+              >Out Qty <span class="text-red-500">*</span></label
+            >
+            <InputNumber
+              v-model="request.outQty"
+              name="outQty"
+              size="small"
+              :min="1"
+              fluid
+            />
             <Message v-if="$form.outQty?.invalid" severity="error" size="small">
               {{ $form.outQty.error?.message }}
             </Message>
@@ -116,10 +159,11 @@
 
     <!-- ===== RFID Table ===== -->
     <div class="card rounded-2xl p-4 border">
-      <RFIDTable
+      <RFIDOutTable
         @addrfid="addRFID"
         :receiveQty="qtyOut"
         :buttonName="'Submit'"
+        :request="request"
       />
     </div>
   </div>
@@ -135,9 +179,22 @@ import RFIDOutTable from "../components/table/RFIDOutTable.vue";
 import RFIDTable from "@/features/ReceiveStockAndRegister/ui/components/table/RFIDTable.vue";
 import type { RFIDType } from "@/features/ReceiveStockAndRegister/types/rfidtype";
 import DatePicker from "primevue/datepicker";
+import { outstockStore } from "../../outstock.store";
+// === store ===
+const OUTSTOCK_STORE = outstockStore();
 // ===== form ref =====
 const formRef = ref();
 const qtyOut = ref(0);
+const request = ref<ScanOutStockRequest>({
+  requestOutNo: "AUTO-GEN",
+  outType: "Adjust",
+  outDate: new Date(),
+
+  productCode: "",
+  color: "",
+  size: "",
+  outQty: 0,
+});
 // ===== initial values =====
 const initialValues = {
   requestOutNo: "AUTO-GEN",
@@ -190,11 +247,25 @@ const addRFID = (rfid: RFIDType[]) => {
   console.log("ADD RFID:", rfid);
   //   qtyOut.value += 1;
 };
-watch(qtyOut, (newVal) => {
-  formRef.value.setValues({
-    outQty: newVal,
-  });
-});
+watch(
+  () => request.value.outQty,
+  (newVal) => {
+    formRef.value.setValues({
+      outQty: newVal,
+    });
+    console.log(request.value);
+    qtyOut.value = newVal;
+  }
+);
+
+watch(
+  () => request.value,
+  (newVal) => {
+    console.log("Request changed:", newVal);
+    OUTSTOCK_STORE.requestScanOutstock = newVal;
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped></style>

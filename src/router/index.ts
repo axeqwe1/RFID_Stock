@@ -104,7 +104,6 @@ const router = createRouter({
           name: "deleterfid",
           component: () => import("../view/RFIDDeleteView.vue"),
         },
-
         {
           path: "/checkstock",
           name: "checkstock",

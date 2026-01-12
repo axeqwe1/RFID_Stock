@@ -9,22 +9,25 @@
       <div class="col-span-2">
         <!-- Out Stock Table -->
         <div class="w-full h-full space-y-2 rounded-xl shadow-xl border-1 p-3">
-          <Button
-            label="Create Request"
-            @click="
-              () => {
-                router.push('/queueoutstock/create');
-              }
-            "
-          />
-          <Button
-            label="Scan"
-            @click="
-              () => {
-                router.push('/queueoutstock/scanoutstock');
-              }
-            "
-          />
+          <div class="flex flex-row space-x-2 mb-2">
+            <Button
+              label="Create Request"
+              @click="
+                () => {
+                  router.push('/queueoutstock/create');
+                }
+              "
+            />
+            <Button
+              label="Scan"
+              @click="
+                () => {
+                  router.push('/queueoutstock/scanoutstock');
+                }
+              "
+            />
+          </div>
+
           <OutStockTable />
         </div>
       </div>

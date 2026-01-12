@@ -122,7 +122,7 @@ import { outstockStore } from "../../outstock.store";
 import CreateRequestTable from "../components/table/CreateRequestTable.vue";
 // ===== form ref =====
 const formRef = ref();
-const RECEIVE_STORE = receiveStockStore();
+
 const itemListRequest = ref<RequestOutItem[]>([]);
 const OUTSTOCK_STORE = outstockStore();
 const emit = defineEmits<{
@@ -173,6 +173,11 @@ const onFormSubmit = (e: FormSubmitEvent) => {
       checkDetail(payload.productCode, payload.color, payload.size)
         .then((res) => {
           console.warn(res);
+          console.warn(resUom);
+          if (resUom.data === null || resUom.data === undefined) {
+            alert("ไม่พบข้อมูลสินค้า");
+            return;
+          }
           const existData = OUTSTOCK_STORE.itemListRequest.find(
             (item) =>
               item.productCode === payload.productCode &&
@@ -184,36 +189,37 @@ const onFormSubmit = (e: FormSubmitEvent) => {
             color: payload.color,
             size: payload.size,
             qty: payload.qty,
-            uom: res.data[0].uom || resUom.data.uom || "N/A",
+            uom: resUom.data || "N/A",
           };
 
           if (res.data.length < 1) {
-            alert("ไม่พบสินค้านี้ในระบบ กรุณาตรวจสอบข้อมูลอีกครั้ง");
-            return;
-          }
-          if (res.data[0].balanceQty < payload.qty) {
-            alert(
-              `จำนวนสินค้าที่ต้องการเบิก (${payload.qty}) มากกว่าจำนวนคงเหลือในคลัง (${res.data[0].balanceQty}) กรุณาตรวจสอบอีกครั้ง`
-            );
-            return;
-          }
-          if (
-            existData &&
-            existData.qty + payload.qty > res.data[0].balanceQty
-          ) {
-            alert(
-              `จำนวนสินค้าที่ต้องการเบิก (${
-                existData.qty + payload.qty
-              }) มากกว่าจำนวนคงเหลือในคลัง (${
-                res.data[0].balanceQty
-              }) กรุณาตรวจสอบอีกครั้ง`
-            );
-            return;
-          }
+            itemListRequest.value.push(newItem);
 
-          itemListRequest.value.push(newItem);
-
-          emit("update:itemListRequest", newItem);
+            emit("update:itemListRequest", newItem);
+            return;
+          } else {
+            alert("สินค้ามีการเบิกออกไปแล้ว");
+            return;
+          }
+          //   if (res.data[0].balanceQty < payload.qty) {
+          //     alert(
+          //       `จำนวนสินค้าที่ต้องการเบิก (${payload.qty}) มากกว่าจำนวนคงเหลือในคลัง (${res.data[0].balanceQty}) กรุณาตรวจสอบอีกครั้ง`
+          //     );
+          //     return;
+          //   }
+          //   if (
+          //     existData &&
+          //     existData.qty + payload.qty > res.data[0].balanceQty
+          //   ) {
+          //     alert(
+          //       `จำนวนสินค้าที่ต้องการเบิก (${
+          //         existData.qty + payload.qty
+          //       }) มากกว่าจำนวนคงเหลือในคลัง (${
+          //         res.data[0].balanceQty
+          //       }) กรุณาตรวจสอบอีกครั้ง`
+          //     );
+          //     return;
+          //   }
         })
         .catch((err) => {
           alert(`เกิดข้อผิดพลาด ${err}`);

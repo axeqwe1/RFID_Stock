@@ -127,7 +127,7 @@
             <Select
               class="mt-1"
               size="small"
-              name="poNo"
+              name="outsourcePONo"
               :loading="loading"
               :options="optionPO"
               placeholder="Select PO No"
@@ -145,11 +145,12 @@
             "
             type="submit"
             fluid
-            :disabled="RECEIVE_STORE.listDataRFIDPO.length < 1"
+            :disabled="OUTSTOCK_STORE.itemListRequest.length < 1"
           />
         </div>
       </div>
     </Form>
+    <ConfirmDialog></ConfirmDialog>
     <CreateRequestTable :showBtn="true" />
   </div>
 </template>
@@ -160,15 +161,23 @@ import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/rece
 import { useFPSWarehouseCompos } from "@/features/ReceiveStockAndRegister/ui/composables/useFPSWarehouseCompos";
 import { useMaster } from "@/stores/MasterStore";
 import { useConfirm, useToast } from "primevue";
-import { nextTick, onMounted, ref } from "vue";
+import { nextTick, onMounted, ref, toRaw, watch } from "vue";
 import { useRouter } from "vue-router";
+
 import DatePicker from "primevue/datepicker";
-import FormField from "primevue/datepicker";
+
+import ConfirmDialog from "primevue/confirmdialog";
+
 import Select from "primevue/select";
 import CreateRequestTable from "./table/CreateRequestTable.vue";
 import RFIDModal from "@/features/ReceiveStockAndRegister/ui/components/modal/RFIDModal.vue";
 import AddProductForm from "../view/AddProductForm.vue";
-import { PODescApi, warehouseInOutType } from "../../outstock.api";
+import {
+  AutorunOutNo,
+  createRequestOutstock,
+  PODescApi,
+  warehouseInOutType,
+} from "../../outstock.api";
 import { outstockStore } from "../../outstock.store";
 const {
   GetWarehouseOptions,
@@ -264,7 +273,7 @@ const resolver = ({ values }: any) => {
   return { values, errors };
 };
 
-const onFormSubmit = ({ valid, values }: any) => {
+const onFormSubmit = async ({ valid, values }: any) => {
   if (!valid) return;
 
   const request = {
@@ -275,10 +284,46 @@ const onFormSubmit = ({ valid, values }: any) => {
       requestBy: values.requestBy,
       outsourcePONo: values.outsourcePONo,
     },
-    items: OUTSTOCK_STORE.itemListRequest,
+    items: toRaw(OUTSTOCK_STORE.itemListRequest),
   };
-
-  console.log("REQUEST PAYLOAD", request);
+  confirm.require({
+    message: "Are you sure you want to proceed?",
+    header: "Confirmation",
+    icon: "pi pi-exclamation-triangle",
+    rejectProps: {
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
+    },
+    acceptProps: {
+      label: "Save",
+    },
+    accept: async () => {
+      const res = await createRequestOutstock(request);
+      console.log(res);
+      console.log("REQUEST PAYLOAD", request);
+      if (res.isSuccess) {
+        toast.add({
+          severity: "success",
+          summary: "Confirmed",
+          detail: "Create request outstock success",
+          life: 3000,
+        });
+      } else {
+        toast.add({
+          severity: "error",
+          summary: "Failed",
+          detail: res.message,
+          life: 3000,
+        });
+      }
+      resetForm();
+      OUTSTOCK_STORE.itemListRequest = [];
+    },
+    reject: () => {
+      // Do nothing on reject
+    },
+  });
 
   // แล้วค่อย call API
 };
@@ -297,7 +342,7 @@ const resetForm = async () => {
   await nextTick();
 };
 const autorunRequestNo = async () => {
-  const res = await GetAutorunReceiveInNo(MASTER_STORE.COMPANY);
+  const res = await AutorunOutNo(MASTER_STORE.COMPANY);
   formRef.value.setValues({
     requestNo: res.data,
   });
@@ -311,6 +356,13 @@ onMounted(async () => {
   optionInOutType.value = inoutType.data.map((item: any) => item.inoutType);
   loading.value = false;
 });
+
+watch(
+  () => OUTSTOCK_STORE.itemListRequest,
+  (newVal) => {
+    console.log(newVal);
+  }
+);
 </script>
 
 <style scoped></style>
