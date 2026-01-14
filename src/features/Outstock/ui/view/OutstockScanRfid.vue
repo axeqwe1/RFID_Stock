@@ -305,6 +305,16 @@ watch(
       size: res.data[0].size,
       outQty: res.data[0].outQty,
     });
+    request.value = {
+      requestOutNo: res.data[0].outNo,
+      outType: res.data[0].outType,
+      outDate: new Date(res.data[0].outDate),
+
+      productCode: res.data[0].itemCode,
+      color: res.data[0].colorCode,
+      size: res.data[0].size,
+      outQty: res.data[0].outQty,
+    };
     qtyOut.value = res.data[0].outQty;
     const details = await getDetailRequest(newVal);
     console.log(details);
