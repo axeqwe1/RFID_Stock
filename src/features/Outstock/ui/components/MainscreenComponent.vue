@@ -46,6 +46,17 @@
 import router from "@/router";
 import OutStockTable from "./table/OutStockTable.vue";
 import OutMainTable from "./table/OutMainTable.vue";
+import { onMounted } from "vue";
+import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/receiveStockStore";
+import { outstockStore } from "../../outstock.store";
+
+const RECEIVE_STORE = receiveStockStore();
+const OUTSTOCK_STORE = outstockStore();
+
+onMounted(() => {
+  RECEIVE_STORE.editReceiveId = null;
+  OUTSTOCK_STORE.OUT_EDITID = "";
+});
 </script>
 
 <style scoped></style>

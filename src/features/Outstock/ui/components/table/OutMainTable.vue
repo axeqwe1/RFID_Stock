@@ -392,10 +392,7 @@ const edit = (receiveNo: string) => {
   RECEIVE_STORE.editReceiveId = receiveNo;
   OUTSTOCK_STORE.OUT_EDITID = receiveNo;
 };
-onUnmounted(() => {
-  RECEIVE_STORE.editReceiveId = null;
-  OUTSTOCK_STORE.OUT_EDITID = "";
-});
+
 onMounted(async () => {
   data.value = await getTrans();
   products.value = data.value;

@@ -140,9 +140,9 @@
         <!-- Submit -->
         <div class="col-span-2 mt-4">
           <Button
-            :severity="RECEIVE_STORE.editRequestId ? 'warn' : 'success'"
+            :severity="OUTSTOCK_STORE.OUT_EDITID ? 'warn' : 'success'"
             :label="
-              RECEIVE_STORE.editRequestId ? 'Submit to edit' : 'Submit to save'
+              OUTSTOCK_STORE.OUT_EDITID ? 'Submit to edit' : 'Submit to save'
             "
             type="submit"
             fluid
@@ -176,6 +176,7 @@ import AddProductForm from "../view/AddProductForm.vue";
 import {
   AutorunOutNo,
   createRequestOutstock,
+  fetchRequestOutstockByOutNo,
   PODescApi,
   warehouseInOutType,
 } from "../../outstock.api";
@@ -283,7 +284,7 @@ const onFormSubmit = async ({ valid, values }: any) => {
       requestDate: values.requestDate,
       outType: values.outType,
       requestBy: values.requestBy,
-      outsourcePONo: values.outsourcePONo,
+      poNo: values.outsourcePONo,
     },
     items: toRaw(OUTSTOCK_STORE.itemListRequest),
   };
@@ -348,6 +349,38 @@ const autorunRequestNo = async () => {
     requestNo: res.data,
   });
 };
+
+onMounted(async () => {
+  console.log(OUTSTOCK_STORE.OUT_EDITID);
+  if (OUTSTOCK_STORE.OUT_EDITID != "" && OUTSTOCK_STORE.OUT_EDITID != null) {
+    const res = await fetchRequestOutstockByOutNo(OUTSTOCK_STORE.OUT_EDITID!);
+    console.log(res);
+    if (res.data.length > 0) {
+      formRef.value.setValues({
+        requestNo: res.data[0].outNo,
+        requestDate: new Date(res.data[0].requestDate),
+        outType: res.data[0].outType,
+        requestBy: res.data[0].requestBy,
+        outsourcePONo: res.data[0].poNo,
+      });
+
+      // formRef.value.setValues({
+      //   requestNo: OUTSTOCK_STORE.editRequestOutstock.header.requestNo,
+      //   requestDate: new Date(OUTSTOCK_STORE.editRequestOutstock.header.requestDate),
+      //   outType: OUTSTOCK_STORE.editRequestOutstock.header.outType,
+      //   requestBy: OUTSTOCK_STORE.editRequestOutstock.header.requestBy,
+      //   outsourcePONo: OUTSTOCK_STORE.editRequestOutstock.header.outsourcePONo,
+      // });
+    }
+    // formRef.value.setValues({
+    //   requestNo: OUTSTOCK_STORE.editRequestOutstock.header.requestNo,
+    //   requestDate: new Date(OUTSTOCK_STORE.editRequestOutstock.header.requestDate),
+    //   outType: OUTSTOCK_STORE.editRequestOutstock.header.outType,
+    //   requestBy: OUTSTOCK_STORE.editRequestOutstock.header.requestBy,
+    //   outsourcePONo: OUTSTOCK_STORE.editRequestOutstock.header.outsourcePONo,
+    // });
+  }
+});
 
 onMounted(async () => {
   loading.value = true;
