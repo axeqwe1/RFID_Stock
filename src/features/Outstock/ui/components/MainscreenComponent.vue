@@ -35,7 +35,7 @@
       <div class="col-span-2">
         <!-- Out Stock Details Table -->
         <div class="w-full h-full space-y-2 rounded-xl shadow-xl border-1 p-3">
-          <RFIDMainScreenTable />
+          <OutMainTable />
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import OutStockTable from "./table/OutStockTable.vue";
-import RFIDMainScreenTable from "@/features/ReceiveStockAndRegister/ui/components/table/RFIDMainScreenTable.vue";
+import OutMainTable from "./table/OutMainTable.vue";
 </script>
 
 <style scoped></style>

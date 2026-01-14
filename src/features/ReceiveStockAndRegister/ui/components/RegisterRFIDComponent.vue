@@ -65,6 +65,7 @@
           <DatePicker
             class="mt-1"
             name="receiveDate"
+            dateFormat="dd/mm/yy"
             fluid
             size="small"
             placeholder="Select receive date"
@@ -167,6 +168,7 @@
           <DatePicker
             class="flex-1 mt-1"
             size="small"
+            dateFormat="dd/mm/yy"
             name="invoiceDate"
             placeholder="Select invoice date"
             fluid

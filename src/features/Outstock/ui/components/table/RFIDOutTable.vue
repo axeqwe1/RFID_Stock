@@ -123,6 +123,7 @@
 import { useSignalR } from "@/composable/useSignalR";
 import { CheckEPCOutStock } from "@/features/Outstock/outstock.api";
 import type { ScanOutStockRequest } from "@/features/Outstock/outstock.model";
+import { outstockStore } from "@/features/Outstock/outstock.store";
 import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/receiveStockStore";
 import type { RFIDType } from "@/features/ReceiveStockAndRegister/types/rfidtype";
 import { CheckEPC, startRfid, stopRfid } from "@/lib/api/RFID";
@@ -141,6 +142,7 @@ const props = defineProps<{
 }>();
 const isScan = ref<boolean>(false);
 const RECEIVE_STORE = receiveStockStore();
+const OUTSTOCK_STORE = outstockStore();
 const maxScaned = ref<number>(props.receiveQty);
 const handleStart = async () => {
   isScan.value = !isScan.value;
@@ -212,6 +214,10 @@ onMounted(async () => {
       // }
     });
   }
+});
+
+onMounted(() => {
+  console.log(props.receiveQty);
 });
 
 onUnmounted(async () => {

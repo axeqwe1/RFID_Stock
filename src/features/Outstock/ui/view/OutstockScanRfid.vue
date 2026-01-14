@@ -59,6 +59,7 @@
               name="outDate"
               size="small"
               placeholder="Select date"
+              dateFormat="dd/mm/yy"
               fluid
               v-model="request.outDate"
             />
@@ -90,6 +91,8 @@
               name="productCode"
               size="small"
               fluid
+              readonly
+              disabled
             />
             <Message
               v-if="$form.productCode?.invalid"
@@ -110,6 +113,8 @@
               name="color"
               size="small"
               fluid
+              readonly
+              disabled
             />
             <Message v-if="$form.color?.invalid" severity="error" size="small">
               {{ $form.color.error?.message }}
@@ -121,7 +126,14 @@
             <label class="font-semibold"
               >Size <span class="text-red-500">*</span></label
             >
-            <InputText v-model="request.size" name="size" size="small" fluid />
+            <InputText
+              v-model="request.size"
+              name="size"
+              size="small"
+              fluid
+              readonly
+              disabled
+            />
             <Message v-if="$form.size?.invalid" severity="error" size="small">
               {{ $form.size.error?.message }}
             </Message>
@@ -137,6 +149,8 @@
               name="outQty"
               size="small"
               :min="1"
+              readonly
+              disabled
               fluid
             />
             <Message v-if="$form.outQty?.invalid" severity="error" size="small">
@@ -180,6 +194,10 @@ import RFIDTable from "@/features/ReceiveStockAndRegister/ui/components/table/RF
 import type { RFIDType } from "@/features/ReceiveStockAndRegister/types/rfidtype";
 import DatePicker from "primevue/datepicker";
 import { outstockStore } from "../../outstock.store";
+import {
+  fetchRequestOutstockByOutNo,
+  getDetailRequest,
+} from "../../outstock.api";
 // === store ===
 const OUTSTOCK_STORE = outstockStore();
 // ===== form ref =====
@@ -265,6 +283,33 @@ watch(
     OUTSTOCK_STORE.requestScanOutstock = newVal;
   },
   { deep: true }
+);
+
+watch(
+  () => OUTSTOCK_STORE.OUT_EDITID,
+  async (newVal) => {
+    // request.value = newVal;
+    console.log(newVal);
+    if (newVal == "" || newVal == null) {
+      return;
+    }
+
+    const res = await fetchRequestOutstockByOutNo(newVal);
+    console.log(res.data[0]);
+    formRef.value.setValues({
+      requestOutNo: res.data[0].outNo,
+      outType: res.data[0].outType,
+
+      productCode: res.data[0].itemCode,
+      color: res.data[0].colorCode,
+      size: res.data[0].size,
+      outQty: res.data[0].outQty,
+    });
+    qtyOut.value = res.data[0].outQty;
+    const details = await getDetailRequest(newVal);
+    console.log(details);
+  },
+  { immediate: true }
 );
 </script>
 

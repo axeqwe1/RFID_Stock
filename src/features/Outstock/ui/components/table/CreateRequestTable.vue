@@ -64,12 +64,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { FilterMatchMode } from "@primevue/core/api";
 import type { RequestOutItem } from "@/features/Outstock/outstock.model";
 import RFIDModal from "@/features/ReceiveStockAndRegister/ui/components/modal/RFIDModal.vue";
 import AddProductForm from "../../view/AddProductForm.vue";
 import { outstockStore } from "@/features/Outstock/outstock.store";
+import { getDetailRequest } from "@/features/Outstock/outstock.api";
 const visible = ref(false);
 const OUTSTOCK_STORE = outstockStore();
 const props = defineProps<{ showBtn: boolean }>();
@@ -128,6 +129,20 @@ const AddProductItem = (newItem: RequestOutItem) => {
 const removeItem = (index: number) => {
   OUTSTOCK_STORE.itemListRequest.splice(index, 1);
 };
+
+watch(
+  () => OUTSTOCK_STORE.OUT_EDITID,
+  async (newVal) => {
+    console.log(newVal);
+    if (newVal == "" || newVal == null) {
+      return;
+    }
+
+    const res = await getDetailRequest(newVal);
+    console.log(res);
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped></style>

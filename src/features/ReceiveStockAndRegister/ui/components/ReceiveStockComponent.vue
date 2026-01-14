@@ -23,7 +23,6 @@
     <!-- Body -->
     <div class="grid grid-cols-2 gap-3 p-3">
       <!-- Receive No -->
-      <!-- Receive No -->
       <div class="space-y-1">
         <label for="receiveNo" class="font-semibold">
           Receive No <span class="text-red-500 font-semibold">*</span>
@@ -64,7 +63,13 @@
         <label class="font-semibold"
           >Receive Date<span class="text-red-500 font-semibold">*</span></label
         >
-        <DatePicker class="mt-1" name="receiveDate" size="small" fluid />
+        <DatePicker
+          class="mt-1"
+          name="receiveDate"
+          size="small"
+          dateFormat="dd/mm/yy"
+          fluid
+        />
         <Message
           v-if="$form.receiveDate?.invalid"
           severity="error"

@@ -1,7 +1,45 @@
 import { apiService } from "@/lib/service";
-import type { OutstockRequest, ScanOutStockRequest } from "./outstock.model";
+import type {
+  OutRequest,
+  OutstockRequest,
+  ScanOutStockRequest,
+} from "./outstock.model";
 
 const API_PATH = "/rfidApi/FPSProductOnline/";
+
+export const fetchRequestOutstock = async () => {
+  try {
+    const res = await apiService.get(
+      "/rfidApi/FPSWarehouse/GetListRequestOutstock"
+    );
+    return res.data;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const fetchRequestOutstockByOutNo = async (outNo: string) => {
+  try {
+    const res = await apiService.get(
+      "/rfidApi/FPSWarehouse/GetRequestOutstockDetail/" + outNo
+    );
+
+    return res.data;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const getDetailRequest = async (outNo: string) => {
+  try {
+    const res = await apiService.get(
+      "/rfidApi/FPSWarehouse/GetDetailRequest/" + outNo
+    );
+    return res.data;
+  } catch (err: any) {
+    throw err;
+  }
+};
 
 export const fetchOption = async () => {
   try {
@@ -109,5 +147,16 @@ export const AutorunOutNo = async (company: string) => {
     return res.data;
   } catch (error) {
     return error;
+  }
+};
+
+export const InoutTypeApi = async () => {
+  try {
+    const res = await apiService.get(
+      "/rfidApi/FPSWarehouseInOutType/OutOptions"
+    );
+    return res.data;
+  } catch (err: any) {
+    throw err;
   }
 };

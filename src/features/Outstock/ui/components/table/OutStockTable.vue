@@ -25,12 +25,12 @@
         sortable
       >
         <!-- clickable Request No -->
-        <template v-if="col.field === 'requestNo'" #body="{ data }">
+        <template v-if="col.field === 'outNo'" #body="{ data }">
           <span
             class="text-sky-600 cursor-pointer hover:underline"
-            @click="edit(data.requestNo)"
+            @click="edit(data.outNo)"
           >
-            {{ data.requestNo }}
+            {{ data.outNo }}
           </span>
         </template>
 
@@ -77,17 +77,20 @@
 import { receiveStockStore } from "@/features/ReceiveStockAndRegister/store/receiveStockStore";
 import type { ProductTransactionResult } from "@/features/ReceiveStockAndRegister/types/productOnlineType";
 import { formatDate } from "@/utils/format";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { FilterMatchMode, FilterOperator } from "@primevue/core/api";
 import { useFPSWarehouseCompos } from "@/features/ReceiveStockAndRegister/ui/composables/useFPSWarehouseCompos";
 import { useFPSProductTransCompose } from "@/features/ReceiveStockAndRegister/ui/composables/useFPSProductTransCompose";
 import { useRouter } from "vue-router";
 import Select from "primevue/select";
 import DatePicker from "primevue/datepicker";
-const products = ref<ProductTransactionResult[]>([]);
+import { fetchRequestOutstock } from "@/features/Outstock/outstock.api";
+import type { OutRequest } from "@/features/Outstock/outstock.model";
+import { outstockStore } from "@/features/Outstock/outstock.store";
+const products = ref<OutRequest[]>([]);
 
 const requestOutStockColumns = ref([
-  { field: "requestNo", header: "Request No", filter: true },
+  { field: "outNo", header: "Request No", filter: true },
   {
     field: "requestDate",
     header: "Request Date",
@@ -96,19 +99,17 @@ const requestOutStockColumns = ref([
   },
   { field: "outType", header: "Out Type", filter: true },
   { field: "requestBy", header: "Request By", filter: true },
-  { field: "productBarcode", header: "Barcode", filter: true },
-  { field: "sku", header: "SKU", filter: true },
-  { field: "productCode", header: "Product Code", filter: true },
-  { field: "color", header: "Color", filter: true },
+  { field: "itemCode", header: "Product Code", filter: true },
+  { field: "colorCode", header: "Color", filter: true },
   { field: "size", header: "Size", filter: true },
-  { field: "qty", header: "Qty", filter: false },
+  { field: "outQty", header: "Qty", filter: false },
   { field: "uom", header: "UOM", filter: true },
 ]);
-const RECEIVE_STORE = receiveStockStore();
+const OUTSTOCK_STORE = outstockStore();
 const { getTrans } = useFPSProductTransCompose();
 const { GetReceiveIn } = useFPSWarehouseCompos();
 const router = useRouter();
-const data = ref<ProductTransactionResult[]>([]);
+const data = ref<OutRequest[]>([]);
 const selectDate = ref<[Date | null, Date | null] | null>(null);
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -145,8 +146,8 @@ function filterDateBetween(value: [Date | null, Date | null] | null) {
   to.setHours(23, 59, 59, 999);
 
   products.value = data.value.filter((item) => {
-    if (!item.receiveDate) return false;
-    const itemDate = new Date(item.receiveDate);
+    if (!item.requestDate) return false;
+    const itemDate = new Date(item.requestDate);
     return itemDate >= from && itemDate <= to;
   });
 }
@@ -155,8 +156,16 @@ const clearDatePicker = () => {
   products.value = data.value; // reset table
 };
 const edit = (receiveNo: string) => {
-  RECEIVE_STORE.editReceiveId = receiveNo;
+  OUTSTOCK_STORE.OUT_EDITID = receiveNo;
+  console.log(OUTSTOCK_STORE.OUT_EDITID);
+  router.push("/queueoutstock/scanoutstock");
 };
+
+onMounted(async () => {
+  const res = await fetchRequestOutstock();
+  products.value = res.data;
+  console.log(products.value);
+});
 </script>
 
 <style scoped></style>

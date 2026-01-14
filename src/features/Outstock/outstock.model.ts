@@ -63,3 +63,20 @@ export interface RequestListOutStock {
   qty: number;
   uom: string;
 }
+
+export interface OutRequest {
+  outNo: string;
+  requestDate: string; // ISO Date string (เช่น "2026-01-11T17:00:00")
+  requestBy: string;
+  outType: string;
+  createBy: string | null;
+  createDate: string; // บาง API ส่ง "0001-01-01T00:00:00"
+  editBy: string | null;
+  editDate: string;
+  itemCode: string;
+  colorCode: string;
+  size: string;
+  outQty: number;
+  uom: string;
+  outStatus: string | null;
+}

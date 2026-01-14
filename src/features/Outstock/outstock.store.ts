@@ -7,5 +7,6 @@ export const outstockStore = defineStore("outstock", () => {
   const itemListRequest = ref<RequestOutItem[]>([]);
   const requestScanOutstock = ref<ScanOutStockRequest | null>(null);
   const listDataRFIDPO = ref<RequestOutItem[]>([]);
-  return { itemListRequest, requestScanOutstock, listDataRFIDPO };
+  const OUT_EDITID = ref<string | null>(null);
+  return { itemListRequest, requestScanOutstock, listDataRFIDPO, OUT_EDITID };
 });

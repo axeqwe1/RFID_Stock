@@ -63,6 +63,7 @@
               name="requestDate"
               size="small"
               placeholder="Select request date"
+              dateFormat="dd/mm/yy"
               fluid
             />
 
